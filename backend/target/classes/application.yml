@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: foodgo-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/foodgo?useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # schema is managed by database/schema.sql, not Hibernate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  web:
+    cors:
+      allowed-origins: "http://localhost:5173"
+
+logging:
+  level:
+    com.foodgo: DEBUG
