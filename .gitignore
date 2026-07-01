@@ -1,1 +1,44 @@
+# Archives & Bundles
 *.zip
+*.tar
+*.gz
+*.rar
+foodgo-docker-images.*
+load_and_run.sh
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+*.log
+
+# Java / Spring Boot Backend
+target/
+backend/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Flutter / Dart Mobile
+.dart_tool/
+mobile/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+mobile/.flutter-plugins-dependencies
+.packages
+build/
+mobile/build/
+ios/Pods/
+mobile/ios/Pods/
+ios/.symlinks/
+mobile/ios/.symlinks/
+ios/Flutter/ephemeral/
+mobile/ios/Flutter/ephemeral/
+
+# IDE & OS
+.DS_Store
+.idea/
+*.swp
+*.swo
