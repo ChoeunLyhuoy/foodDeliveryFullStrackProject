@@ -1,5 +1,19 @@
 <template>
   <div class="app-shell">
+    <!-- Real-time WebSocket Notification Toasts -->
+    <div class="toast-container">
+      <transition-group name="toast">
+        <div v-for="toast in activeToasts" :key="toast.id" class="live-toast" :class="toast.type?.toLowerCase() || 'info'">
+          <div class="toast-icon">{{ getToastIcon(toast.type) }}</div>
+          <div class="toast-content">
+            <div class="toast-title">{{ toast.title }}</div>
+            <div class="toast-msg">{{ toast.message }}</div>
+          </div>
+          <button @click="dismissToast(toast.id)" class="toast-close">&times;</button>
+        </div>
+      </transition-group>
+    </div>
+
     <header class="top-nav">
       <div class="nav-container">
         <RouterLink to="/" class="logo">
@@ -35,9 +49,34 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCartStore } from './store/cart'
+import { subscribeToTopic } from './services/socket'
 
 const cartStore = useCartStore()
 const currentRole = ref(localStorage.getItem('foodgo_role') || 'guest')
+const activeToasts = ref([])
+
+function getToastIcon(type) {
+  if (type === 'SUCCESS') return '🎉'
+  if (type === 'WARNING') return '🚨'
+  if (type === 'ERROR') return '❌'
+  return '🔔'
+}
+
+function pushToast(notif) {
+  const toast = {
+    id: notif.id || Date.now() + Math.random(),
+    title: notif.title || 'Live Notification',
+    message: notif.message || '',
+    type: notif.type || 'INFO'
+  }
+  activeToasts.value.unshift(toast)
+  if (activeToasts.value.length > 4) activeToasts.value.pop()
+  setTimeout(() => dismissToast(toast.id), 6000)
+}
+
+function dismissToast(id) {
+  activeToasts.value = activeToasts.value.filter(t => t.id !== id)
+}
 
 const cartCount = computed(() => {
   return cartStore.items.reduce((sum, item) => sum + item.quantity, 0)
@@ -64,6 +103,11 @@ function syncRole() {
 onMounted(() => {
   window.addEventListener('role-changed', syncRole)
   window.addEventListener('storage', syncRole)
+  
+  // Real-time notification subscription
+  subscribeToTopic('/topic/notifications', (notif) => {
+    if (notif) pushToast(notif)
+  })
 })
 
 onUnmounted(() => {
@@ -231,5 +275,86 @@ onUnmounted(() => {
   .nav-item.router-link-active::after {
     bottom: -22px;
   }
+}
+
+/* Real-time Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 85px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  width: calc(100vw - 48px);
+}
+
+.live-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #3b82f6;
+  position: relative;
+  overflow: hidden;
+}
+
+.live-toast.success { border-left-color: #10b981; }
+.live-toast.warning { border-left-color: #f59e0b; }
+.live-toast.error { border-left-color: #ef4444; }
+
+.toast-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e1e24;
+  margin-bottom: 2px;
+}
+
+.toast-msg {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.toast-close:hover {
+  color: #1e1e24;
+}
+
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(50px) scale(0.95);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.9);
 }
 </style>

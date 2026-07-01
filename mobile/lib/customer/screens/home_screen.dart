@@ -20,10 +20,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Map<String, String>> _categories = [
     {'name': 'All', 'emoji': '🍽️'},
     {'name': 'Pizza', 'emoji': '🍕'},
-    {'name': 'Italian', 'emoji': '🍝'},
+    {'name': 'Sushi', 'emoji': '🍣'},
+    {'name': 'Ramen', 'emoji': '🍜'},
     {'name': 'Burgers', 'emoji': '🍔'},
-    {'name': 'Salads', 'emoji': '🥗'},
-    {'name': 'Drinks', 'emoji': '🥤'},
+    {'name': 'Khmer', 'emoji': '🍲'},
+    {'name': 'Boba Tea', 'emoji': '🧋'},
+    {'name': 'Desserts', 'emoji': '🍰'},
   ];
 
   @override

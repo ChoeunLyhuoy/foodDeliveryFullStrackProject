@@ -40,7 +40,7 @@
         </div>
         <div class="filter-tabs">
           <button 
-            v-for="cat in ['All', 'Pizza', 'Pasta', 'Drinks']" 
+            v-for="cat in categories" 
             :key="cat"
             :class="['filter-tab', { active: activeMenuCategory === cat }]"
             @click="activeMenuCategory = cat"
@@ -98,10 +98,7 @@
     <transition name="toast-pop">
       <div v-if="showToast" class="toast-popup">
         <span class="toast-icon">✨</span>
-        <div class="toast-text">
-          <strong>Added to Order Bag</strong>
-          <p>{{ lastAddedName }} is ready for checkout.</p>
-        </div>
+        <span class="toast-msg">Added <strong>{{ lastAddedName }}</strong> to your bag</span>
       </div>
     </transition>
   </div>
@@ -137,11 +134,20 @@ onMounted(async () => {
   }
 })
 
+const categories = computed(() => {
+  const cats = new Set(['All'])
+  menu.value.forEach(i => {
+    if (i.category) cats.add(i.category)
+    else cats.add('Mains')
+  })
+  return Array.from(cats)
+})
+
 const filteredMenu = computed(() => {
   if (activeMenuCategory.value === 'All') return menu.value
   return menu.value.filter(item => 
-    item.name.toLowerCase().includes(activeMenuCategory.value.toLowerCase()) ||
-    (item.category && item.category.toLowerCase().includes(activeMenuCategory.value.toLowerCase()))
+    item.category === activeMenuCategory.value ||
+    item.name.toLowerCase().includes(activeMenuCategory.value.toLowerCase())
   )
 })
 
