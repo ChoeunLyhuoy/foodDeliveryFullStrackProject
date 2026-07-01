@@ -1,34 +1,91 @@
 <template>
   <div class="home-view">
-    <!-- Hero Banner Section -->
-    <div class="hero-section">
+    <!-- ROLE-SPECIFIC GREETING BANNER -->
+    <!-- 1. Guest Account Style -->
+    <div v-if="currentRole === 'guest'" class="hero-section guest-hero">
       <div class="hero-content">
-        <span class="hero-badge">✨ Craving something delicious?</span>
-        <h1 class="hero-title">Hungry? FoodGo is on the way.</h1>
-        <p class="hero-subtitle">Discover the best culinary dishes, hot pizza, crisp salads, and Italian classics delivered straight to your door.</p>
+        <span class="hero-badge guest-badge">👋 Welcome Guest Visitor!</span>
+        <h1 class="hero-title">Discover Gourmet Meals & Fast Delivery.</h1>
+        <p class="hero-subtitle">Sign in or register an account to unlock loyalty rewards, save favorite dishes, and track live GPS courier updates.</p>
         
-        <!-- Search input inside Hero -->
-        <div class="search-container">
+        <div class="hero-action-row">
+          <RouterLink to="/login" class="btn-primary guest-signin-btn">🔑 Sign In to Your Account ➔</RouterLink>
+        </div>
+
+        <div class="search-container mt-4">
           <span class="search-icon">🔍</span>
-          <input v-model="search" class="search-input" placeholder="Search pizza, pasta, restaurants..." />
+          <input v-model="search" class="search-input" placeholder="Explore 10 restaurants, pizza, ramen..." />
         </div>
       </div>
       <div class="hero-graphic">
-        <!-- Generates a premium illustration card representing high quality food -->
-        <div class="graphic-card">
+        <div class="graphic-card guest-card">
+          <div class="emoji-circle">🎁</div>
+          <div class="graphic-text">
+            <strong>New Customer Offer</strong>
+            <p>Free Delivery on 1st order</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Logged-in Customer Style -->
+    <div v-else-if="currentRole === 'customer'" class="hero-section customer-hero">
+      <div class="hero-content">
+        <span class="hero-badge customer-badge">⭐ VIP Member · {{ currentUser }}</span>
+        <h1 class="hero-title">Hungry again, Alice? We've got you.</h1>
+        <p class="hero-subtitle">Your favorite Neapolitan pizza and Tokyo ramen are open right now with 20-30 minute express dispatch.</p>
+        
+        <div class="hero-action-row">
+          <RouterLink to="/order/1" class="btn-live-track">🛵 Track Order #1 Live ➔</RouterLink>
+          <RouterLink to="/cart" class="btn-secondary">🛍️ View Bag</RouterLink>
+        </div>
+
+        <div class="search-container mt-4">
+          <span class="search-icon">🔍</span>
+          <input v-model="search" class="search-input" placeholder="Search your favorite dishes..." />
+        </div>
+      </div>
+      <div class="hero-graphic">
+        <div class="graphic-card customer-card">
           <div class="emoji-circle">🍕</div>
           <div class="graphic-text">
             <strong>Pizza Palace</strong>
-            <p>Popular nearby</p>
+            <p>Ready in 15 mins</p>
           </div>
-          <span class="rating-badge">★ 4.6</span>
+          <span class="rating-badge">★ 4.8</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Restaurant Partner Style -->
+    <div v-else-if="currentRole === 'restaurant'" class="hero-section partner-hero">
+      <div class="hero-content">
+        <span class="hero-badge partner-badge">🏪 Kitchen Partner Portal · {{ currentUser }}</span>
+        <h1 class="hero-title">Restaurant Management Desk</h1>
+        <p class="hero-subtitle">You are signed in as a Restaurant Partner. Switch to the Kanban live kitchen board to manage incoming orders.</p>
+        
+        <div class="hero-action-row">
+          <RouterLink to="/restaurant-dashboard" class="btn-partner">👨‍🍳 Launch Live Kitchen Board ➔</RouterLink>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Call Center Agent Style -->
+    <div v-else-if="currentRole === 'callcenter'" class="hero-section agent-hero">
+      <div class="hero-content">
+        <span class="hero-badge agent-badge">🎧 Support Dispatch Desk · {{ currentUser }}</span>
+        <h1 class="hero-title">Call Center Operations</h1>
+        <p class="hero-subtitle">You are signed in as a Support Agent. Monitor live customer escalations and assist riders in transit.</p>
+        
+        <div class="hero-action-row">
+          <RouterLink to="/call-center-dashboard" class="btn-agent">🚨 Open Live Ticket Queue ➔</RouterLink>
         </div>
       </div>
     </div>
 
     <!-- Category Pills Section -->
     <div class="categories-section">
-      <h2 class="section-title">Explore Categories</h2>
+      <h2 class="section-title">Explore Cuisines</h2>
       <div class="category-pills">
         <button 
           v-for="cat in categories" 
@@ -69,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import RestaurantCard from '../components/RestaurantCard.vue'
 import { getRestaurants } from '../services/api'
 
@@ -78,12 +135,23 @@ const loading = ref(true)
 const search = ref('')
 const activeCategory = ref('All')
 
+const currentRole = ref(localStorage.getItem('foodgo_role') || 'guest')
+const currentUser = ref(localStorage.getItem('foodgo_user') || 'Visitor')
+
+function syncRole() {
+  currentRole.value = localStorage.getItem('foodgo_role') || 'guest'
+  currentUser.value = localStorage.getItem('foodgo_user') || 'Visitor'
+}
+
 const categories = [
   { id: 1, name: 'All', emoji: '🍽️' },
   { id: 2, name: 'Pizza', emoji: '🍕' },
-  { id: 3, name: 'Italian', emoji: '🍝' },
-  { id: 4, name: 'Sides', emoji: '🍟' },
-  { id: 5, name: 'Drinks', emoji: '🥤' }
+  { id: 3, name: 'Sushi', emoji: '🍣' },
+  { id: 4, name: 'Ramen', emoji: '🍜' },
+  { id: 5, name: 'Burgers', emoji: '🍔' },
+  { id: 6, name: 'Khmer', emoji: '🍲' },
+  { id: 7, name: 'Boba Tea', emoji: '🧋' },
+  { id: 8, name: 'Desserts', emoji: '🍰' }
 ]
 
 const filtered = computed(() => {
@@ -94,7 +162,6 @@ const filtered = computed(() => {
     if (activeCategory.value === 'All') {
       return matchesSearch
     }
-    // Filter restaurants that offer items in this category or match description keywords
     const matchesCategory = r.description?.toLowerCase().includes(activeCategory.value.toLowerCase()) ||
                             r.name.toLowerCase().includes(activeCategory.value.toLowerCase())
     return matchesSearch && matchesCategory
@@ -102,6 +169,8 @@ const filtered = computed(() => {
 })
 
 onMounted(async () => {
+  window.addEventListener('role-changed', syncRole)
+  window.addEventListener('storage', syncRole)
   try {
     const { data } = await getRestaurants()
     restaurants.value = data
@@ -110,6 +179,11 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('role-changed', syncRole)
+  window.removeEventListener('storage', syncRole)
 })
 
 function resetFilters() {
@@ -387,5 +461,43 @@ function resetFilters() {
   .hero-title {
     font-size: 2.2rem;
   }
+}
+
+/* Role-Specific Hero Styling */
+.guest-hero {
+  background: linear-gradient(135deg, #1e1e24 0%, #31323d 100%);
+  color: white;
+}
+.guest-badge { background: rgba(255, 255, 255, 0.15); color: #facc15; }
+.guest-signin-btn { background: #ff5e40; color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; display: inline-block; }
+
+.customer-hero {
+  background: linear-gradient(135deg, #fff3f0 0%, #ffe8e2 100%);
+  border: 2px solid #ffccb8;
+}
+.customer-badge { background: #ff5e40; color: white; }
+.btn-live-track { background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 800; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+.partner-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+  border-left: 6px solid #3b82f6;
+}
+.partner-badge { background: #3b82f6; color: white; }
+.btn-partner { background: #3b82f6; color: white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 800; display: inline-block; }
+
+.agent-hero {
+  background: linear-gradient(135deg, #311042 0%, #4a1d64 100%);
+  color: white;
+  border-left: 6px solid #a855f7;
+}
+.agent-badge { background: #a855f7; color: white; }
+.btn-agent { background: #a855f7; color: white; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: 800; display: inline-block; }
+
+.hero-action-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 10px;
 }
 </style>
