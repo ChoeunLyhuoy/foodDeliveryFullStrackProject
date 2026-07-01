@@ -5,6 +5,7 @@ import com.foodgo.entity.Restaurant;
 import com.foodgo.entity.Order;
 import com.foodgo.service.RestaurantService;
 import com.foodgo.service.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/restaurants")
 @RequiredArgsConstructor
+@Tag(name = "1. Restaurants & Menu", description = "Endpoints for browsing restaurants, menus, and incoming kitchen orders")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;

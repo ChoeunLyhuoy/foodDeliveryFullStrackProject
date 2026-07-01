@@ -4,6 +4,7 @@ import com.foodgo.dto.CreateOrderRequest;
 import com.foodgo.dto.UpdateOrderStatusRequest;
 import com.foodgo.entity.Order;
 import com.foodgo.service.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@Tag(name = "2. Orders Management", description = "Endpoints for creating food orders, updating lifecycles, and rider assignments")
 public class OrderController {
 
     private final OrderService orderService;

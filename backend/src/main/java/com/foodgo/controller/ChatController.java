@@ -4,6 +4,7 @@ import com.foodgo.dto.ChatMessageDto;
 import com.foodgo.dto.SendChatMessageRequest;
 import com.foodgo.entity.ChatMessage;
 import com.foodgo.service.ChatService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -31,6 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders/{orderId}/chat")
 @RequiredArgsConstructor
+@Tag(name = "5. Live Chat Channels", description = "Endpoints for Rider-to-Customer and Customer-to-Support chat history & REST fallback")
 public class ChatController {
 
     private final ChatService chatService;

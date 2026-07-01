@@ -2,6 +2,7 @@ package com.foodgo.controller;
 
 import com.foodgo.entity.CallCenterTicket;
 import com.foodgo.service.CallCenterService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/call-center/tickets")
 @RequiredArgsConstructor
+@Tag(name = "4. Call Center Dispatch", description = "Endpoints for managing customer support tickets, dispatching agents, and resolution tracking")
 public class CallCenterController {
 
     private final CallCenterService callCenterService;
