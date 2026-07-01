@@ -109,26 +109,73 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x0E000000),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4),
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x0E000000),
+                                      blurRadius: 10,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: const Icon(Icons.notifications_outlined, color: Color(0xFF1E1E24)),
+                                child: const Icon(Icons.notifications_outlined, color: Color(0xFF1E1E24)),
+                              ),
+                              Positioned(
+                                right: -4,
+                                top: -4,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE1553C),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.white, width: 1.5),
+                                  ),
+                                  child: const Text(
+                                    '3',
+                                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
                       
-                      // Promo Hero Banner Card
+                      // Search Bar (Placed above banner like Figma Image 1)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x0A000000),
+                              blurRadius: 15,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          onChanged: (val) => setState(() => _searchQuery = val),
+                          decoration: InputDecoration(
+                            hintText: 'Search restaurants or dishes...',
+                            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFFE1553C)),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Promo Hero Banner Card (Exact match to Figma Image 1)
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
@@ -153,68 +200,54 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
+                                  const Text(
+                                    'LIMITED TIME',
+                                    style: TextStyle(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Text(
-                                      '⚡ FLASH DEAL TODAY',
-                                      style: TextStyle(
-                                        color: Color(0xFFE1553C),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w800,
-                                      ),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.0,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 6),
                                   const Text(
-                                    '25% OFF Pizza & Pasta!',
+                                    'Free delivery\non your first 3 orders',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.5,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.2,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
-                                  const Text(
-                                    'Use voucher code: FOODGO25 at checkout for instant savings.',
-                                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Text(
+                                      'Claim Now',
+                                      style: TextStyle(
+                                        color: Color(0xFFE1553C),
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Text('🍕', style: TextStyle(fontSize: 54)),
+                            const Text('🛵', style: TextStyle(fontSize: 64)),
                           ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Search Bar
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x0A000000),
-                              blurRadius: 15,
-                              offset: Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          onChanged: (val) => setState(() => _searchQuery = val),
-                          decoration: InputDecoration(
-                            hintText: 'Search restaurants, pizza, pasta...',
-                            hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFFE1553C)),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
