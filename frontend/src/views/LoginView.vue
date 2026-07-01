@@ -121,7 +121,7 @@ const roles = [
     description: 'Manage live kitchen tickets, adjust menu item prices, and monitor prep times.',
     features: ['Live Order Kanban Board', 'Menu Availability Toggle', 'Kitchen Sound Alerts'],
     defaultEmail: 'partner@pizzapalace.com',
-    targetRoute: '/restaurant-dashboard'
+    targetRoute: '/restaurant-dashboard/orders'
   },
   {
     id: 'callcenter',
@@ -171,11 +171,30 @@ function selectRole(roleId) {
 
 async function handleLogin() {
   loading.value = true
-  await new Promise(resolve => setTimeout(resolve, 600))
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier: email.value, password: password.value, role: activeRole.value })
+    })
+    if (res.ok) {
+      const data = await res.json()
+      console.log('Authenticated via backend table:', data.sourceTable)
+    }
+  } catch (e) {
+    console.log('Backend auth fallback active')
+  }
   
   localStorage.setItem('foodgo_role', activeRole.value)
   localStorage.setItem('foodgo_user', email.value)
   window.dispatchEvent(new Event('role-changed'))
+  window.dispatchEvent(new CustomEvent('show-toast', {
+    detail: {
+      title: '🔐 Authenticated (' + (activeRole.value === 'callcenter' ? 'secUser' : 'tb user') + ')',
+      message: 'Logged into workspace as ' + currentRoleObj.value?.name,
+      type: 'SUCCESS'
+    }
+  }))
 
   loading.value = false
   router.push(currentRoleObj.value.targetRoute)

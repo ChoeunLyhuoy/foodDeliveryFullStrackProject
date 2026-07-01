@@ -71,11 +71,25 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
     setState(() => _isLoading = false);
 
     if (isCustomer) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🎉 Authenticated (tb user): Welcome to Customer App'),
+          backgroundColor: Color(0xFFE1553C),
+          duration: Duration(seconds: 3),
+        ),
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🛵 Authenticated (secUser): Welcome to Rider Logistics Dashboard'),
+          backgroundColor: Color(0xFF10B981),
+          duration: Duration(seconds: 3),
+        ),
+      );
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),

@@ -427,73 +427,93 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Cover Graphic
-              Container(
-                height: 150,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFE1553C), Color(0xFFFF8C61)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+                child: Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFE1553C), Color(0xFFFF8C61)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Text(
-                        r.name.contains('Pizza')
-                            ? '🍕'
-                            : r.name.contains('Burger')
-                                ? '🍔'
-                                : '🍝',
-                        style: const TextStyle(fontSize: 60),
-                      ),
-                    ),
-                    Positioned(
-                      top: 14,
-                      right: 14,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x1F000000),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (r.coverImageUrl != null && r.coverImageUrl!.isNotEmpty)
+                        Image.network(
+                          r.coverImageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Text(
+                              r.name.contains('Pizza')
+                                  ? '🍕'
+                                  : r.name.contains('Burger')
+                                      ? '🍔'
+                                      : '🍝',
+                              style: const TextStyle(fontSize: 60),
                             ),
-                          ],
+                          ),
+                        )
+                      else
+                        Center(
+                          child: Text(
+                            r.name.contains('Pizza')
+                                ? '🍕'
+                                : r.name.contains('Burger')
+                                    ? '🍔'
+                                    : '🍝',
+                            style: const TextStyle(fontSize: 60),
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.star_rounded, color: Color(0xFFFFB800), size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${r.rating}',
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-                            ),
-                          ],
+                      Positioned(
+                        top: 14,
+                        right: 14,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x1F000000),
+                                blurRadius: 8,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.star_rounded, color: Color(0xFFFFB800), size: 18),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${r.rating}',
+                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 12,
-                      left: 14,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xAA000000),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          '⚡ 20-30 min delivery',
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                      Positioned(
+                        bottom: 12,
+                        left: 14,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xAA000000),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            '⚡ 20-30 min delivery',
+                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               // Info

@@ -20,6 +20,23 @@ INSERT INTO users (name, email, phone, password_hash, role) VALUES
 ('Sophea Customer', 'sophea@example.com', '+855555555', '$2a$10$placeholderHash', 'CUSTOMER'),
 ('Kenji Swift Rider', 'kenji.rider@example.com', '+855666666', '$2a$10$placeholderHash', 'RIDER');
 
+-- 1b. SEED SEC USERS
+CREATE TABLE IF NOT EXISTS sec_users (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(160) NOT NULL UNIQUE,
+  email VARCHAR(160) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  account_non_locked BOOLEAN DEFAULT TRUE,
+  enabled BOOLEAN DEFAULT TRUE,
+  last_login DATETIME
+);
+TRUNCATE TABLE sec_users;
+INSERT INTO sec_users (username, email, password_hash, role) VALUES
+('secAdmin', 'admin@sec.foodgo.com', '$2a$10$secHash', 'ADMIN'),
+('secAgent', 'agent@sec.foodgo.com', '$2a$10$secHash', 'CALL_CENTER_AGENT'),
+('secPartner', 'partner@sec.foodgo.com', '$2a$10$secHash', 'RESTAURANT_OWNER');
+
 -- 2. SEED 10 GOURMET RESTAURANTS WITH HIGH-RES COVER PICTURE LINKS
 INSERT INTO restaurants (owner_id, name, description, address, cover_image_url, rating, is_open) VALUES
 (2, 'Pizza Palace & Trattoria', 'Authentic wood-fired Neapolitan pizza, handmade pasta, and Italian classics.', '123 Norodom Blvd, Phnom Penh', 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80', 4.8, TRUE),

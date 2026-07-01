@@ -12,7 +12,12 @@
 
     <!-- Immersive Cover Hero -->
     <div class="cover-wrapper">
-      <img :src="restaurant.coverImageUrl || '/placeholder.jpg'" :alt="restaurant.name" class="cover-image" />
+      <img 
+        :src="restaurant.coverImageUrl || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'" 
+        :alt="restaurant.name" 
+        class="cover-image" 
+        @error="handleImageError($event, 'cover')"
+      />
       <div class="cover-gradient"></div>
       <div class="restaurant-hero-content">
         <div class="meta-row">
@@ -54,7 +59,12 @@
       <div class="menu-grid">
         <div v-for="item in filteredMenu" :key="item.id" class="menu-item-card">
           <div class="menu-image-box">
-            <img :src="item.imageUrl || '/images/margherita.jpg'" :alt="item.name" class="menu-image" />
+            <img 
+              :src="item.imageUrl || 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=600&auto=format&fit=crop&q=80'" 
+              :alt="item.name" 
+              class="menu-image" 
+              @error="handleImageError($event, 'dish')"
+            />
             <span class="dietary-tag" v-if="item.price > 12">🔥 Chef Special</span>
             <span class="dietary-tag green" v-else>🌱 Fresh Made</span>
           </div>
@@ -154,6 +164,14 @@ const filteredMenu = computed(() => {
 const cartTotal = computed(() => {
   return cart.items.reduce((acc, i) => acc + (i.unitPrice * i.quantity), 0)
 })
+
+function handleImageError(e, type) {
+  if (type === 'cover') {
+    e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'
+  } else {
+    e.target.src = 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=600&auto=format&fit=crop&q=80'
+  }
+}
 
 function add(item) {
   cart.addItem(restaurant.value.id, {

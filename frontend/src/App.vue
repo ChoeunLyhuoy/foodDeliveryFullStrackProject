@@ -100,9 +100,14 @@ function syncRole() {
   currentRole.value = localStorage.getItem('foodgo_role') || 'guest'
 }
 
+function handleCustomToast(e) {
+  if (e && e.detail) pushToast(e.detail)
+}
+
 onMounted(() => {
   window.addEventListener('role-changed', syncRole)
   window.addEventListener('storage', syncRole)
+  window.addEventListener('show-toast', handleCustomToast)
   
   // Real-time notification subscription
   subscribeToTopic('/topic/notifications', (notif) => {
@@ -113,6 +118,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('role-changed', syncRole)
   window.removeEventListener('storage', syncRole)
+  window.removeEventListener('show-toast', handleCustomToast)
 })
 </script>
 

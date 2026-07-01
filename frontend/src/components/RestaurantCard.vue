@@ -1,7 +1,12 @@
 <template>
   <RouterLink :to="`/restaurant/${restaurant.id}`" class="restaurant-card">
     <div class="image-wrapper">
-      <img :src="restaurant.coverImageUrl || '/placeholder.jpg'" :alt="restaurant.name" class="restaurant-image" />
+      <img 
+        :src="restaurant.coverImageUrl || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'" 
+        :alt="restaurant.name" 
+        class="restaurant-image" 
+        @error="handleImageError"
+      />
       <div class="gradient-overlay"></div>
       
       <!-- Top Badges -->
@@ -44,6 +49,10 @@
 defineProps({
   restaurant: { type: Object, required: true }
 })
+
+function handleImageError(e) {
+  e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80'
+}
 </script>
 
 <style scoped>
