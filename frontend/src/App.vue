@@ -14,6 +14,11 @@
           </RouterLink>
           <RouterLink to="/restaurant-dashboard" class="nav-item">Restaurant</RouterLink>
           <RouterLink to="/call-center-dashboard" class="nav-item font-accent">Support Queue</RouterLink>
+          
+          <RouterLink to="/login" class="role-switcher-btn">
+            <span>{{ roleEmoji }}</span>
+            <span>{{ roleLabel }}</span>
+          </RouterLink>
         </nav>
       </div>
     </header>
@@ -28,12 +33,42 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCartStore } from './store/cart'
 
 const cartStore = useCartStore()
+const currentRole = ref(localStorage.getItem('foodgo_role') || 'guest')
+
 const cartCount = computed(() => {
   return cartStore.items.reduce((sum, item) => sum + item.quantity, 0)
+})
+
+const roleEmoji = computed(() => {
+  if (currentRole.value === 'restaurant') return '🏪'
+  if (currentRole.value === 'callcenter') return '🎧'
+  if (currentRole.value === 'customer') return '🍔'
+  return '🔑'
+})
+
+const roleLabel = computed(() => {
+  if (currentRole.value === 'restaurant') return 'Partner'
+  if (currentRole.value === 'callcenter') return 'Agent'
+  if (currentRole.value === 'customer') return 'Customer'
+  return 'Sign In / Roles'
+})
+
+function syncRole() {
+  currentRole.value = localStorage.getItem('foodgo_role') || 'guest'
+}
+
+onMounted(() => {
+  window.addEventListener('role-changed', syncRole)
+  window.addEventListener('storage', syncRole)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('role-changed', syncRole)
+  window.removeEventListener('storage', syncRole)
 })
 </script>
 
@@ -141,6 +176,26 @@ const cartCount = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.role-switcher-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-ink);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(30, 30, 36, 0.15);
+}
+
+.role-switcher-btn:hover {
+  background: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .main-content {

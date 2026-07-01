@@ -6,14 +6,14 @@ spring:
     name: foodgo-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/foodgo?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:db_foodgo}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:Lyhuoy@120805}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate   # schema is managed by database/schema.sql, not Hibernate
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -27,3 +27,4 @@ spring:
 logging:
   level:
     com.foodgo: DEBUG
+

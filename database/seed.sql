@@ -1,4 +1,4 @@
-USE foodgo;
+USE db_foodgo;
 
 INSERT INTO users (name, email, phone, password_hash, role) VALUES
 ('Alice Customer', 'alice@example.com', '+855111111', '$2a$10$placeholderHash', 'CUSTOMER'),

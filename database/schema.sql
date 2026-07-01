@@ -1,8 +1,8 @@
 -- =========================================================
 -- FoodGo Food Delivery Platform - MySQL Schema
 -- =========================================================
-CREATE DATABASE IF NOT EXISTS foodgo CHARACTER SET utf8mb4;
-USE foodgo;
+CREATE DATABASE IF NOT EXISTS db_foodgo CHARACTER SET utf8mb4;
+USE db_foodgo;
 
 -- ---------------------------------------------------------
 -- Users (customers, restaurant owners, riders, call-center

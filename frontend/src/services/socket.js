@@ -12,8 +12,9 @@ let client = null
 
 function getClient() {
   if (!client) {
+    const wsUrl = import.meta.env.VITE_WS_URL || '/ws'
     client = new Client({
-      webSocketFactory: () => new SockJS('/ws'),
+      webSocketFactory: () => new SockJS(wsUrl),
       reconnectDelay: 4000
     })
     client.activate()

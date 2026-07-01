@@ -5,12 +5,30 @@ import '../models/menu_item.dart';
 import '../models/order.dart';
 import '../models/chat_message.dart';
 
-/// Central place for the backend base URL. For local dev on a real device,
-/// replace 'localhost' with your machine's LAN IP (Android emulator: use
-/// 10.0.2.2 instead of localhost).
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// Central place for the backend base URL and WebSocket URL.
+/// Supports override via compile/run time arguments:
+/// --dart-define=API_URL=http://your-ip:8080/api --dart-define=WS_URL=ws://your-ip:8080/ws-native
 class ApiConfig {
-  static const String baseUrl = 'http://localhost:8080/api';
-  static const String wsUrl = 'ws://localhost:8080/ws-native';
+  static String get baseUrl {
+    const String envUrl = String.fromEnvironment('API_URL', defaultValue: '');
+    if (envUrl.isNotEmpty) return envUrl;
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'http://10.0.2.2:8080/api';
+    }
+    return 'http://localhost:8080/api';
+  }
+
+  static String get wsUrl {
+    const String envWs = String.fromEnvironment('WS_URL', defaultValue: '');
+    if (envWs.isNotEmpty) return envWs;
+    if (!kIsWeb && Platform.isAndroid) {
+      return 'ws://10.0.2.2:8080/ws-native';
+    }
+    return 'ws://localhost:8080/ws-native';
+  }
 }
 
 class ApiService {
