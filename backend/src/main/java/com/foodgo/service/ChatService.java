@@ -5,18 +5,14 @@ import com.foodgo.dto.SendChatMessageRequest;
 import com.foodgo.entity.ChatMessage;
 import com.foodgo.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Handles both chat channels. They share the same persistence + websocket
- * mechanics but are kept logically separate by `channel` and by topic name,
- * so a message sent on the rider channel never crosses into the call-center
- * channel and vice-versa.
- */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -41,9 +37,12 @@ public class ChatService {
         ChatMessage saved = chatMessageRepository.save(message);
         ChatMessageDto dto = ChatMessageDto.from(saved);
 
-        // Broadcast to whoever is subscribed to this order+channel's topic
-        String topic = "/topic/order." + orderId + "." + channel.name().toLowerCase().replace("_", "");
-        messagingTemplate.convertAndSend(topic, dto);
+        try {
+            String topic = "/topic/order." + orderId + "." + channel.name().toLowerCase().replace("_", "");
+            messagingTemplate.convertAndSend(topic, dto);
+        } catch (Exception e) {
+            log.error("Failed to broadcast chat message: {}", e.getMessage());
+        }
 
         return dto;
     }

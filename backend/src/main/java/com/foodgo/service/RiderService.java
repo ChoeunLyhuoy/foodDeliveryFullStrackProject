@@ -1,6 +1,7 @@
 package com.foodgo.service;
 
 import com.foodgo.entity.Rider;
+import com.foodgo.exception.ResourceNotFoundException;
 import com.foodgo.repository.RiderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class RiderService {
 
     public Rider getById(Long id) {
         return riderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Rider not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Rider not found: " + id));
     }
 
     public Rider setOnlineStatus(Long riderId, boolean online) {
