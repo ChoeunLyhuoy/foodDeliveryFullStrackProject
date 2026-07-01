@@ -1,55 +1,79 @@
 <template>
   <div v-if="restaurant" class="restaurant-detail">
-    <!-- Back to restaurants link -->
-    <RouterLink to="/" class="back-link">
-      <span>←</span> Back to restaurants
-    </RouterLink>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav-bar">
+      <RouterLink to="/" class="back-link">
+        <span class="arrow-icon">←</span> Back to Discovery
+      </RouterLink>
+      <div class="header-badges">
+        <span class="delivery-badge">⚡ Instant 20-30m Delivery</span>
+      </div>
+    </div>
 
-    <!-- Cover banner -->
+    <!-- Immersive Cover Hero -->
     <div class="cover-wrapper">
       <img :src="restaurant.coverImageUrl || '/placeholder.jpg'" :alt="restaurant.name" class="cover-image" />
-      <div class="cover-overlay"></div>
-      <div class="restaurant-header-info">
+      <div class="cover-gradient"></div>
+      <div class="restaurant-hero-content">
         <div class="meta-row">
-          <span class="rating-badge">★ {{ restaurant.rating?.toFixed(1) || '0.0' }}</span>
-          <span class="status-badge" :class="restaurant.isOpen ? 'open' : 'closed'">
-            {{ restaurant.isOpen ? 'Open Now' : 'Closed' }}
+          <span class="rating-pill">★ {{ restaurant.rating?.toFixed(1) || '4.8' }}</span>
+          <span class="status-pill" :class="restaurant.isOpen ? 'open' : 'closed'">
+            {{ restaurant.isOpen ? '● OPEN NOW' : '○ CLOSED' }}
           </span>
+          <span class="category-pill">🍕 Gourmet Italian</span>
         </div>
         <h1 class="restaurant-name">{{ restaurant.name }}</h1>
-        <p class="restaurant-desc">{{ restaurant.description }}</p>
+        <p class="restaurant-desc">{{ restaurant.description || 'Artisanal recipes prepared fresh to order by master chefs.' }}</p>
         <div class="address-row">
           <span class="location-icon">📍</span>
-          <span>{{ restaurant.address }}</span>
+          <span>{{ restaurant.address || 'Phnom Penh City Center' }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Menu grid -->
-    <div class="menu-container">
-      <div class="menu-header">
-        <h2>Our Menu</h2>
-        <p class="muted">Fresh ingredients, prepared daily</p>
+    <!-- Menu Section & Category Filter Tabs -->
+    <div class="menu-section">
+      <div class="menu-section-header">
+        <div>
+          <h2>Artisanal Menu</h2>
+          <p class="muted">Select dishes to add directly to your order bag</p>
+        </div>
+        <div class="filter-tabs">
+          <button 
+            v-for="cat in ['All', 'Pizza', 'Pasta', 'Drinks']" 
+            :key="cat"
+            :class="['filter-tab', { active: activeMenuCategory === cat }]"
+            @click="activeMenuCategory = cat"
+          >
+            {{ cat }}
+          </button>
+        </div>
       </div>
 
+      <!-- Menu Grid -->
       <div class="menu-grid">
-        <div v-for="item in menu" :key="item.id" class="card menu-item-card">
-          <div class="menu-image-wrapper">
-            <img :src="item.imageUrl || '/images/margherita.jpg'" :alt="item.name" class="menu-item-image" />
-            <span class="category-tag" v-if="item.category">{{ item.category }}</span>
+        <div v-for="item in filteredMenu" :key="item.id" class="menu-item-card">
+          <div class="menu-image-box">
+            <img :src="item.imageUrl || '/images/margherita.jpg'" :alt="item.name" class="menu-image" />
+            <span class="dietary-tag" v-if="item.price > 12">🔥 Chef Special</span>
+            <span class="dietary-tag green" v-else>🌱 Fresh Made</span>
           </div>
-          <div class="menu-item-info">
-            <h3 class="menu-item-name">{{ item.name }}</h3>
-            <p class="menu-item-desc">{{ item.description || 'Delicately cooked with premium quality ingredients.' }}</p>
-            <div class="purchase-row">
-              <span class="menu-item-price">${{ item.price?.toFixed(2) }}</span>
+          <div class="menu-info-box">
+            <div class="menu-top-row">
+              <h3 class="menu-name">{{ item.name }}</h3>
+              <span class="menu-price">${{ item.price?.toFixed(2) }}</span>
+            </div>
+            <p class="menu-desc">{{ item.description || 'Rich savory flavors combined with aromatic herbs and melted mozzarella.' }}</p>
+            <div class="menu-actions">
+              <span class="availability-status" :class="item.isAvailable !== false ? 'in-stock' : 'sold-out'">
+                {{ item.isAvailable !== false ? '✓ Available' : 'Out of stock' }}
+              </span>
               <button 
-                class="btn-primary add-button" 
-                :disabled="!restaurant.isOpen"
+                class="btn-add-dish" 
+                :disabled="!restaurant.isOpen || item.isAvailable === false"
                 @click="add(item)"
               >
-                <span>Add</span>
-                <span class="plus-icon">+</span>
+                <span>+ Add to Bag</span>
               </button>
             </div>
           </div>
@@ -57,23 +81,39 @@
       </div>
     </div>
 
-    <!-- Toast Notification for cart -->
-    <transition name="toast-fade">
-      <div v-if="showToast" class="cart-toast card">
-        <span class="toast-emoji">🛒</span>
-        <span>Dish added to your cart!</span>
+    <!-- Floating Order Summary Banner -->
+    <transition name="slide-up">
+      <div v-if="cart.items.length > 0" class="floating-bag-summary">
+        <div class="bag-info">
+          <span class="bag-count">{{ cart.items.length }} Items</span>
+          <span class="bag-total">Total: ${{ cartTotal.toFixed(2) }}</span>
+        </div>
+        <RouterLink to="/cart" class="btn-checkout-link">
+          Review Bag & Checkout ➔
+        </RouterLink>
+      </div>
+    </transition>
+
+    <!-- Toast Notification -->
+    <transition name="toast-pop">
+      <div v-if="showToast" class="toast-popup">
+        <span class="toast-icon">✨</span>
+        <div class="toast-text">
+          <strong>Added to Order Bag</strong>
+          <p>{{ lastAddedName }} is ready for checkout.</p>
+        </div>
       </div>
     </transition>
   </div>
   
-  <div v-else class="loading-container">
+  <div v-else class="loading-state">
     <div class="spinner"></div>
-    <p>Loading restaurant menu...</p>
+    <p>Preparing menu presentation...</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getRestaurant, getMenu } from '../services/api'
 import { useCartStore } from '../store/cart'
@@ -83,6 +123,8 @@ const restaurant = ref(null)
 const menu = ref([])
 const cart = useCartStore()
 const showToast = ref(false)
+const lastAddedName = ref('')
+const activeMenuCategory = ref('All')
 
 onMounted(async () => {
   const id = route.params.id
@@ -95,6 +137,18 @@ onMounted(async () => {
   }
 })
 
+const filteredMenu = computed(() => {
+  if (activeMenuCategory.value === 'All') return menu.value
+  return menu.value.filter(item => 
+    item.name.toLowerCase().includes(activeMenuCategory.value.toLowerCase()) ||
+    (item.category && item.category.toLowerCase().includes(activeMenuCategory.value.toLowerCase()))
+  )
+})
+
+const cartTotal = computed(() => {
+  return cart.items.reduce((acc, i) => acc + (i.unitPrice * i.quantity), 0)
+})
+
 function add(item) {
   cart.addItem(restaurant.value.id, {
     menuItemId: item.id,
@@ -102,11 +156,11 @@ function add(item) {
     unitPrice: item.price
   })
   
-  // Show toast feedback
+  lastAddedName.value = item.name
   showToast.value = true
   setTimeout(() => {
     showToast.value = false
-  }, 2000)
+  }, 2500)
 }
 </script>
 
@@ -114,29 +168,48 @@ function add(item) {
 .restaurant-detail {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 28px;
+  padding-bottom: 80px;
+}
+
+.top-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  font-weight: 600;
-  color: var(--color-muted);
+  gap: 8px;
+  font-weight: 700;
+  color: #64748b;
+  text-decoration: none;
   font-size: 0.95rem;
+  transition: color 0.2s ease;
 }
 
 .back-link:hover {
-  color: var(--color-primary);
+  color: #ff5e40;
 }
 
-/* Immersive banner */
+.delivery-badge {
+  background: #fff3ed;
+  color: #ff5e40;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #fed7aa;
+}
+
+/* Immersive Cover Banner */
 .cover-wrapper {
   position: relative;
-  height: 320px;
-  border-radius: var(--radius-xl);
+  height: 360px;
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 .cover-image {
@@ -145,249 +218,322 @@ function add(item) {
   object-fit: cover;
 }
 
-.cover-overlay {
+.cover-gradient {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.7) 100%);
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(15, 23, 42, 0.85) 100%);
 }
 
-.restaurant-header-info {
+.restaurant-hero-content {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--space-8);
+  padding: 30px;
   color: white;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-}
-
-.restaurant-name {
-  color: white;
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.restaurant-desc {
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.9);
-  max-width: 600px;
+  gap: 10px;
 }
 
 .meta-row {
   display: flex;
-  gap: var(--space-3);
+  gap: 10px;
+  align-items: center;
 }
 
-.rating-badge {
-  background: var(--color-accent);
-  color: var(--color-ink);
+.rating-pill, .status-pill, .category-pill {
+  font-size: 0.78rem;
   font-weight: 800;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
+  padding: 5px 12px;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
 }
 
-.status-badge {
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
+.rating-pill {
+  background: #fde047;
+  color: #854d0e;
 }
 
-.status-badge.open {
-  background: var(--color-success);
+.status-pill.open {
+  background: rgba(16, 185, 129, 0.9);
   color: white;
 }
 
-.status-badge.closed {
-  background: var(--color-error);
+.status-pill.closed {
+  background: rgba(239, 68, 68, 0.9);
   color: white;
+}
+
+.category-pill {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.restaurant-name {
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.restaurant-desc {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  max-width: 680px;
+  margin: 0;
 }
 
 .address-row {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 6px;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
+  color: #94a3b8;
 }
 
-/* Menu area */
-.menu-container {
-  margin-top: var(--space-6);
+/* Menu Section */
+.menu-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 22px;
 }
 
-.menu-header h2 {
+.menu-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.menu-section-header h2 {
   font-size: 1.8rem;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+  color: #1e293b;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f1f5f9;
+  padding: 5px;
+  border-radius: 16px;
+}
+
+.filter-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tab.active {
+  background: white;
+  color: #ff5e40;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .menu-item-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
   display: flex;
   flex-direction: column;
+  transition: all 0.25s ease;
 }
 
 .menu-item-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.06);
+  border-color: rgba(255, 94, 64, 0.3);
 }
 
-.menu-image-wrapper {
+.menu-image-box {
   position: relative;
-  height: 150px;
-  overflow: hidden;
-  background: var(--color-bg);
+  height: 170px;
+  background: #f8fafc;
 }
 
-.menu-item-image {
+.menu-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.category-tag {
+.dietary-tag {
   position: absolute;
-  bottom: var(--space-2);
-  left: var(--space-2);
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--color-ink);
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  text-transform: uppercase;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 94, 64, 0.9);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 10px;
 }
 
-.menu-item-info {
-  padding: var(--space-4);
+.dietary-tag.green {
+  background: rgba(16, 185, 129, 0.9);
+}
+
+.menu-info-box {
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  gap: var(--space-2);
-}
-
-.menu-item-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.menu-item-desc {
-  color: var(--color-muted);
-  font-size: 0.85rem;
-  line-height: 1.4;
+  gap: 10px;
   flex: 1;
 }
 
-.purchase-row {
+.menu-top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
 }
 
-.menu-item-price {
-  font-size: 1.25rem;
+.menu-name {
+  font-size: 1.15rem;
   font-weight: 800;
-  color: var(--color-ink);
+  color: #1e293b;
+  margin: 0;
 }
 
-.add-button {
-  padding: var(--space-2) var(--space-4);
+.menu-price {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ff5e40;
+}
+
+.menu-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+}
+
+.menu-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed #f1f5f9;
+}
+
+.availability-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.availability-status.in-stock { color: #10b981; }
+.availability-status.sold-out { color: #ef4444; }
+
+.btn-add-dish {
+  background: #ff5e40;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 94, 64, 0.25);
+}
+
+.btn-add-dish:hover:not(:disabled) {
+  background: #e04a2e;
+  transform: scale(1.03);
+}
+
+.btn-add-dish:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Floating Bag Summary */
+.floating-bag-summary {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 600px;
+  background: #1e293b;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.bag-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.bag-count {
+  background: #ff5e40;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 800;
   font-size: 0.85rem;
 }
 
-.plus-icon {
-  font-size: 1rem;
+.bag-total {
+  font-weight: 800;
+  font-size: 1.1rem;
 }
 
-/* Toast */
-.cart-toast {
-  position: fixed;
-  bottom: var(--space-8);
-  right: var(--space-8);
-  background: var(--color-ink);
-  color: white;
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  z-index: 200;
-  font-weight: 600;
+.btn-checkout-link {
+  color: #38bdf8;
+  font-weight: 800;
+  text-decoration: none;
   font-size: 0.95rem;
 }
 
-.toast-emoji {
-  font-size: 1.2rem;
-}
-
-/* Transitions */
-.toast-fade-enter-active,
-.toast-fade-leave-active {
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toast-fade-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.toast-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-/* Loading */
-.loading-container {
+/* Toast Notification */
+.toast-popup {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  background: white;
+  border-left: 5px solid #10b981;
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-12) 0;
-  gap: var(--space-4);
+  gap: 14px;
+  z-index: 60;
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3.5px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: var(--radius-full);
-  animation: spin 0.8s linear infinite;
-}
+.toast-icon { font-size: 1.6rem; }
+.toast-text strong { font-size: 0.95rem; color: #1e293b; display: block; }
+.toast-text p { font-size: 0.82rem; color: #64748b; margin: 2px 0 0; }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+.slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease; }
+.slide-up-enter-from, .slide-up-leave-to { opacity: 0; transform: translate(-50%, 20px); }
 
-@media (max-width: 768px) {
-  .cover-wrapper {
-    height: 240px;
-  }
-  .restaurant-name {
-    font-size: 1.7rem;
-  }
-}
+.toast-pop-enter-active, .toast-pop-leave-active { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.toast-pop-enter-from, .toast-pop-leave-to { opacity: 0; transform: translateY(20px) scale(0.9); }
 </style>

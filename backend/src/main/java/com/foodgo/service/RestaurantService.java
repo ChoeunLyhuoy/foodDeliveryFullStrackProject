@@ -5,7 +5,9 @@ import com.foodgo.entity.Restaurant;
 import com.foodgo.repository.MenuItemRepository;
 import com.foodgo.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -14,6 +16,7 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final MenuItemRepository menuItemRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<Restaurant> listAll() {
         return restaurantRepository.findAll();
@@ -28,10 +31,16 @@ public class RestaurantService {
         return menuItemRepository.findByRestaurantId(restaurantId);
     }
 
+    @Transactional
     public MenuItem addMenuItem(MenuItem item) {
-        return menuItemRepository.save(item);
+        MenuItem saved = menuItemRepository.save(item);
+        if (saved.getRestaurantId() != null) {
+            messagingTemplate.convertAndSend("/topic/restaurant/" + saved.getRestaurantId() + "/menu", saved);
+        }
+        return saved;
     }
 
+    @Transactional
     public MenuItem updateMenuItem(Long id, MenuItem updated) {
         MenuItem existing = menuItemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Menu item not found: " + id));
@@ -41,6 +50,10 @@ public class RestaurantService {
         existing.setImageUrl(updated.getImageUrl());
         existing.setCategory(updated.getCategory());
         existing.setIsAvailable(updated.getIsAvailable());
-        return menuItemRepository.save(existing);
+        MenuItem saved = menuItemRepository.save(existing);
+        if (saved.getRestaurantId() != null) {
+            messagingTemplate.convertAndSend("/topic/restaurant/" + saved.getRestaurantId() + "/menu", saved);
+        }
+        return saved;
     }
 }

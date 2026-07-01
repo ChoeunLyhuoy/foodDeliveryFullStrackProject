@@ -8,6 +8,7 @@ import com.foodgo.repository.MenuItemRepository;
 import com.foodgo.repository.OrderItemRepository;
 import com.foodgo.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final MenuItemRepository menuItemRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public Order createOrder(CreateOrderRequest request) {
@@ -49,7 +51,13 @@ public class OrderService {
         }
 
         saved.setTotalAmount(total);
-        return orderRepository.save(saved);
+        Order result = orderRepository.save(saved);
+
+        // Broadcast real-time order creation event
+        messagingTemplate.convertAndSend("/topic/orders/live", result);
+        messagingTemplate.convertAndSend("/topic/restaurant/" + result.getRestaurantId() + "/orders", result);
+
+        return result;
     }
 
     public Order getById(Long id) {
@@ -65,7 +73,6 @@ public class OrderService {
         return orderRepository.findByRestaurantId(restaurantId);
     }
 
-    // Powers the rider "chat inbox": every non-final order assigned to this rider
     public List<Order> getActiveOrdersForRider(Long riderId) {
         return orderRepository.findByRiderIdAndStatusNot(riderId, Order.Status.DELIVERED);
     }
@@ -74,7 +81,16 @@ public class OrderService {
     public Order updateStatus(Long orderId, Order.Status status) {
         Order order = getById(orderId);
         order.setStatus(status);
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+
+        // Broadcast live status change event via STOMP WebSocket
+        messagingTemplate.convertAndSend("/topic/order." + orderId, saved);
+        messagingTemplate.convertAndSend("/topic/orders/live", saved);
+        if (saved.getRestaurantId() != null) {
+            messagingTemplate.convertAndSend("/topic/restaurant/" + saved.getRestaurantId() + "/orders", saved);
+        }
+
+        return saved;
     }
 
     @Transactional
@@ -82,6 +98,12 @@ public class OrderService {
         Order order = getById(orderId);
         order.setRiderId(riderId);
         order.setStatus(Order.Status.PICKED_UP);
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+
+        // Broadcast rider assignment event
+        messagingTemplate.convertAndSend("/topic/order." + orderId, saved);
+        messagingTemplate.convertAndSend("/topic/orders/live", saved);
+
+        return saved;
     }
 }
