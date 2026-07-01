@@ -18,6 +18,21 @@ public class CallCenterController {
         return callCenterService.getOpenQueue();
     }
 
+    @GetMapping("/customer/{customerId}")
+    public List<CallCenterTicket> getByCustomer(@PathVariable Long customerId) {
+        return callCenterService.getByCustomer(customerId);
+    }
+
+    @GetMapping("/agent/{agentId}")
+    public List<CallCenterTicket> getByAgent(@PathVariable Long agentId) {
+        return callCenterService.getByAgent(agentId);
+    }
+
+    @GetMapping("/order/{orderId}")
+    public List<CallCenterTicket> getByOrder(@PathVariable Long orderId) {
+        return callCenterService.getByOrder(orderId);
+    }
+
     @GetMapping("/{id}")
     public CallCenterTicket getById(@PathVariable Long id) {
         return callCenterService.getById(id);

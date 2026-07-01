@@ -7,4 +7,6 @@ import java.util.List;
 public interface CallCenterTicketRepository extends JpaRepository<CallCenterTicket, Long> {
     List<CallCenterTicket> findByStatusNot(CallCenterTicket.Status status);
     List<CallCenterTicket> findByCustomerId(Long customerId);
+    List<CallCenterTicket> findByAgentId(Long agentId);
+    List<CallCenterTicket> findByOrderId(Long orderId);
 }

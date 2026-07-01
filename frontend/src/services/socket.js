@@ -1,13 +1,6 @@
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
-/**
- * One STOMP connection, reused by both chat features. Each call to
- * subscribeToChat() is scoped to a single order + channel, so a
- * subscription to the rider topic never receives call-center messages.
- *
- * channel: 'rider' | 'callcenter'
- */
 let client = null
 
 function getClient() {
@@ -28,12 +21,24 @@ export function subscribeToChat(orderId, channel, onMessage) {
 
   const trySubscribe = () => {
     if (c.connected) {
-      c.subscribe(topic, (msg) => onMessage(JSON.parse(msg.body)))
+      return c.subscribe(topic, (msg) => onMessage(JSON.parse(msg.body)))
     } else {
       c.onConnect = () => c.subscribe(topic, (msg) => onMessage(JSON.parse(msg.body)))
     }
   }
-  trySubscribe()
+  return trySubscribe()
+}
+
+export function subscribeToTopic(topic, onMessage) {
+  const c = getClient()
+  const trySubscribe = () => {
+    if (c.connected) {
+      return c.subscribe(topic, (msg) => onMessage(JSON.parse(msg.body)))
+    } else {
+      c.onConnect = () => c.subscribe(topic, (msg) => onMessage(JSON.parse(msg.body)))
+    }
+  }
+  return trySubscribe()
 }
 
 export function sendChatMessage(orderId, channel, payload) {
