@@ -16,11 +16,11 @@
             <span class="nav-icon">📥</span> Support Queue
             <span class="badge red">12</span>
           </RouterLink>
-          <RouterLink to="/call-center-dashboard" class="nav-item">
+          <a href="#" class="nav-item">
             <span class="nav-icon">💬</span> Live Chat
             <span class="badge orange">3</span>
-          </RouterLink>
-          <RouterLink to="/call-center-dashboard/lookup" class="nav-item">
+          </a>
+          <RouterLink to="/call-center-dashboard/lookup" class="nav-item" exact-active-class="active">
             <span class="nav-icon">🔍</span> Order Lookup
           </RouterLink>
           <a href="#" class="nav-item">
