@@ -37,6 +37,9 @@
           <span class="status-label">Agent Status</span>
           <strong class="status-val"><span class="online-dot">●</span> Alex M. · Online</strong>
         </div>
+        <RouterLink to="/login" class="sign-out-link">
+          <span class="signout-icon">←</span> Sign Out
+        </RouterLink>
       </div>
     </aside>
 
@@ -388,6 +391,22 @@ function formatStatus(status) {
 .status-label { font-size: 0.78rem; color: #94a3b8; display: block; }
 .status-val { font-size: 0.92rem; color: white; display: block; margin-top: 4px; font-weight: 700; }
 .online-dot { color: #10b981; }
+
+.sign-out-link {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding-left: 6px;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+.sign-out-link:hover {
+  color: #ff5e40;
+}
 
 /* Main Content */
 .main-content {
