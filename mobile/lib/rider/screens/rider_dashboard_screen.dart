@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'active_deliveries_screen.dart';
 import 'chat_inbox_screen.dart';
+import 'earnings_screen.dart';
+import 'new_order_request_screen.dart';
 import '../../main.dart';
 
 const int demoRiderId = 1;
@@ -14,13 +16,9 @@ class RiderDashboardScreen extends StatefulWidget {
 
 class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
   bool _online = true;
-  int _navIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    if (_navIndex == 1) return const ActiveDeliveriesScreen(riderId: demoRiderId);
-    if (_navIndex == 2) return const ChatInboxScreen(riderId: demoRiderId);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
@@ -80,7 +78,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: _online ? Colors.white : Colors.white.withOpacity(0.2),
+                                  color: _online ? Colors.white : Colors.white.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                                 child: Row(
@@ -151,75 +149,92 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                 child: Column(
                   children: [
                     // New Order Request Floating Orange Card (Figma Image 2)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE1553C), Color(0xFFFF8C61)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        borderRadius: BorderRadius.circular(22),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFE1553C).withOpacity(0.35),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
+                    GestureDetector(
+                      onTap: () async {
+                        final accepted = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(builder: (_) => const NewOrderRequestScreen()),
+                        );
+                        if (accepted == true && mounted) {
+                          // Jump straight to Active Deliveries screen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ActiveDeliveriesScreen(riderId: demoRiderId),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFE1553C), Color(0xFFFF8C61)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
                           ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'NEW ORDER REQUEST!',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'Tap to view',
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFE1553C).withValues(alpha: 0.35),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'NEW ORDER REQUEST!',
                                   style: TextStyle(
-                                    color: Color(0xFFE1553C),
+                                    color: Colors.white,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.8,
                                   ),
                                 ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Text(
+                                    'Tap to view',
+                                    style: TextStyle(
+                                      color: Color(0xFFE1553C),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Burgersmith → 123 Main St',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'Burgersmith → 123 Main St',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900,
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            '3 items · 2.4 km   |   \$8.50 payout',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(height: 6),
+                            const Text(
+                              '3 items · 2.4 km   |   \$8.50 payout',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
 
@@ -234,10 +249,41 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                       mainAxisSpacing: 14,
                       childAspectRatio: 1.35,
                       children: [
-                        _buildNavGridCard('🚚', 'Active Deliveries', badgeCount: 2, onTap: () => setState(() => _navIndex = 1)),
-                        _buildNavGridCard('👛', 'Earnings'),
-                        _buildNavGridCard('💬', 'Chat Inbox', badgeCount: 3, onTap: () => setState(() => _navIndex = 2)),
-                        _buildNavGridCard('🧭', 'Navigation'),
+                        _buildNavGridCard(
+                          '🚚',
+                          'Active Deliveries',
+                          badgeCount: 2,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ActiveDeliveriesScreen(riderId: demoRiderId)),
+                          ),
+                        ),
+                        _buildNavGridCard(
+                          '👛',
+                          'Earnings',
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const EarningsScreen()),
+                          ),
+                        ),
+                        _buildNavGridCard(
+                          '💬',
+                          'Chat Inbox',
+                          badgeCount: 3,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ChatInboxScreen(riderId: demoRiderId)),
+                          ),
+                        ),
+                        _buildNavGridCard(
+                          '🧭',
+                          'Navigation',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Opening Navigation routes...')),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ],
@@ -248,16 +294,6 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _navIndex,
-        onDestinationSelected: (i) => setState(() => _navIndex = i),
-        indicatorColor: const Color(0xFFE1553C).withOpacity(0.15),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_rounded), label: 'Dashboard'),
-          NavigationDestination(icon: Icon(Icons.local_shipping_rounded), label: 'Deliveries'),
-          NavigationDestination(icon: Icon(Icons.chat_bubble_rounded), label: 'Chat'),
-        ],
-      ),
     );
   }
 
@@ -265,9 +301,9 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         children: [
@@ -283,7 +319,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),

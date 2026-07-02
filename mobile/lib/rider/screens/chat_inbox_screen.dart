@@ -39,189 +39,181 @@ class _ChatInboxScreenState extends State<ChatInboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Fallback lists matching Figma Screenshot 5
+    final hasData = _orders.isNotEmpty;
+    final displayList = hasData 
+        ? _orders 
+        : [
+            _MockChatThread(
+              customerName: 'Sarah Chen',
+              avatarEmoji: '👩🏻',
+              orderId: 'FG-8821',
+              lastMessage: 'Could you ring the bell?',
+              timeStr: '2:16 PM',
+              unreadBadge: 1,
+            ),
+            _MockChatThread(
+              customerName: 'Marcus Lee',
+              avatarEmoji: '👨🏽',
+              orderId: 'FG-8819',
+              lastMessage: "I'm waiting outside",
+              timeStr: '1:55 PM',
+              unreadBadge: 2,
+            ),
+            _MockChatThread(
+              customerName: 'Priya Singh',
+              avatarEmoji: '👩🏽',
+              orderId: 'FG-8805',
+              lastMessage: 'Thank you! 😊',
+              timeStr: '12:30 PM',
+              unreadBadge: 0,
+            ),
+          ];
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Row(
-          children: [
-            Text('Customer Messages', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 19)),
-            SizedBox(width: 8),
-            ContainerSpanLive(),
-          ],
-        ),
         backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF1E1E24),
-        elevation: 0.5,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1E1E24)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Customer Chats',
+          style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF1E1E24), fontSize: 18),
+        ),
+        actions: [
+          // Orange circular badge count on the right of header
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE1553C),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                '3',
+                style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
-      body: _loading
+      body: _loading && hasData
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFE1553C)))
-          : RefreshIndicator(
-              onRefresh: _loadChats,
-              color: const Color(0xFFE1553C),
-              child: _orders.isEmpty
-                  ? ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(height: 120),
-                        Center(
-                          child: Column(
-                            children: [
-                              Text('💬', style: TextStyle(fontSize: 60)),
-                              SizedBox(height: 16),
-                              Text(
-                                'No Active Customer Chats',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1E1E24)),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'When you accept active orders, real-time messaging\nchannels with customers appear here.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
-                              ),
-                            ],
-                          ),
+          : ListView.separated(
+              padding: const EdgeInsets.all(12),
+              itemCount: displayList.length,
+              separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade100),
+              itemBuilder: (context, i) {
+                final item = displayList[i];
+                final String name = item is _MockChatThread ? item.customerName : 'Customer #${(item as FoodOrder).customerId}';
+                final String avatar = item is _MockChatThread ? item.avatarEmoji : '👤';
+                final String orderStr = item is _MockChatThread ? item.orderId : 'FG-882${(item as FoodOrder).id}';
+                final String lastMsg = item is _MockChatThread ? item.lastMessage : 'Order is heading your way!';
+                final String timeVal = item is _MockChatThread ? item.timeStr : '2:00 PM';
+                final int badge = item is _MockChatThread ? item.unreadBadge : 0;
+
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  onTap: () {
+                    final targetId = item is _MockChatThread ? 1 : (item as FoodOrder).id;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RiderSideChatScreen(orderId: targetId, riderId: widget.riderId),
+                      ),
+                    );
+                  },
+                  leading: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF1F3F5),
+                          shape: BoxShape.circle,
                         ),
-                      ],
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _orders.length,
-                      itemBuilder: (context, i) {
-                        final o = _orders[i];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x0A000000),
-                                blurRadius: 12,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(20),
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => RiderSideChatScreen(orderId: o.id, riderId: widget.riderId),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 54,
-                                      height: 54,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0x1EE1553C),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          '#${o.customerId}',
-                                          style: const TextStyle(
-                                            color: Color(0xFFE1553C),
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Customer #${o.customerId}',
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 16,
-                                                  color: Color(0xFF1E1E24),
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: const Color(0xFFE8F5E9),
-                                                  borderRadius: BorderRadius.circular(10),
-                                                ),
-                                                child: Text(
-                                                  'Order #${o.id}',
-                                                  style: const TextStyle(
-                                                    color: Color(0xFF2E7D32),
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w800,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.delivery_dining, size: 16, color: Color(0xFFE1553C)),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                o.status.replaceAll('_', ' '),
-                                                style: const TextStyle(
-                                                  color: Color(0xFF64748B),
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFFCBD5E1)),
-                                  ],
-                                ),
-                              ),
+                        child: Center(
+                          child: Text(avatar, style: const TextStyle(fontSize: 28)),
+                        ),
+                      ),
+                      if (badge > 0)
+                        Positioned(
+                          right: -3,
+                          top: -3,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE1553C),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '$badge',
+                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                    ],
+                  ),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: Color(0xFF1E1E24)),
+                      ),
+                      Text(
+                        timeVal,
+                        style: TextStyle(color: Colors.grey.shade400, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 4),
+                      Text(
+                        'Order #$orderStr',
+                        style: const TextStyle(color: Color(0xFFE1553C), fontSize: 12, fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        lastMsg,
+                        style: TextStyle(
+                          color: badge > 0 ? const Color(0xFF1E1E24) : Colors.grey.shade500,
+                          fontSize: 13,
+                          fontWeight: badge > 0 ? FontWeight.bold : FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
     );
   }
 }
 
-class ContainerSpanLive extends StatelessWidget {
-  const ContainerSpanLive({super.key});
+class _MockChatThread {
+  final String customerName;
+  final String avatarEmoji;
+  final String orderId;
+  final String lastMessage;
+  final String timeStr;
+  final int unreadBadge;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.circle, color: Color(0xFF2E7D32), size: 8),
-          SizedBox(width: 4),
-          Text(
-            'LIVE',
-            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 10, fontWeight: FontWeight.w900),
-          ),
-        ],
-      ),
-    );
-  }
+  _MockChatThread({
+    required this.customerName,
+    required this.avatarEmoji,
+    required this.orderId,
+    required this.lastMessage,
+    required this.timeStr,
+    required this.unreadBadge,
+  });
 }
