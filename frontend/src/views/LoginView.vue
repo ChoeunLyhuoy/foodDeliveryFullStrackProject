@@ -61,8 +61,13 @@
 
         <form @submit.prevent="handleLogin" class="login-form">
           <div class="form-grid">
+            <!-- Dynamic User / Phone Label -->
             <div class="form-group">
-              <label>Work Email / Username</label>
+              <label v-if="activeRole === 'customer'">Consumer Phone / Email</label>
+              <label v-else-if="activeRole === 'restaurant'">Partner Email / Username</label>
+              <label v-else-if="activeRole === 'delivery'">Rider Phone / Username</label>
+              <label v-else>Support Agent Email</label>
+              
               <div class="input-wrapper">
                 <span class="input-icon">👤</span>
                 <input v-model="email" type="text" required placeholder="Enter credentials..." />
@@ -77,6 +82,31 @@
                 <button type="button" class="btn-toggle-pass" @click="showPass = !showPass">
                   {{ showPass ? '👁️' : '👁️‍🗨️' }}
                 </button>
+              </div>
+            </div>
+
+            <!-- Dynamic extra field by role -->
+            <div v-if="activeRole === 'restaurant'" class="form-group">
+              <label>Kitchen Terminal Code</label>
+              <div class="input-wrapper">
+                <span class="input-icon">📟</span>
+                <input v-model="kitchenTerminal" type="text" required placeholder="e.g. KITCHEN-BSM-01" />
+              </div>
+            </div>
+
+            <div v-else-if="activeRole === 'delivery'" class="form-group">
+              <label>Vehicle Plate Number</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🛵</span>
+                <input v-model="vehiclePlate" type="text" required placeholder="e.g. PP-1A-8888" />
+              </div>
+            </div>
+
+            <div v-else-if="activeRole === 'callcenter'" class="form-group">
+              <label>Agent Badge ID</label>
+              <div class="input-wrapper">
+                <span class="input-icon">🆔</span>
+                <input v-model="agentBadge" type="text" required placeholder="e.g. AGENT-CC-99" />
               </div>
             </div>
           </div>
@@ -108,6 +138,9 @@ const router = useRouter()
 const activeRole = ref('restaurant')
 const email = ref('partner@pizzapalace.com')
 const password = ref('restaurant123')
+const vehiclePlate = ref('PP-1A-8888')
+const kitchenTerminal = ref('KITCHEN-BSM-01')
+const agentBadge = ref('AGENT-CC-99')
 const showPass = ref(false)
 const loading = ref(false)
 
@@ -166,6 +199,9 @@ function selectRole(roleId) {
   if (found) {
     email.value = found.defaultEmail
     password.value = roleId + '123'
+    if (roleId === 'delivery') vehiclePlate.value = 'PP-1A-8888'
+    if (roleId === 'restaurant') kitchenTerminal.value = 'KITCHEN-BSM-01'
+    if (roleId === 'callcenter') agentBadge.value = 'AGENT-CC-99'
   }
 }
 
@@ -175,7 +211,14 @@ async function handleLogin() {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier: email.value, password: password.value, role: activeRole.value })
+      body: JSON.stringify({ 
+        identifier: email.value, 
+        password: password.value, 
+        role: activeRole.value,
+        vehiclePlate: activeRole.value === 'delivery' ? vehiclePlate.value : null,
+        kitchenTerminal: activeRole.value === 'restaurant' ? kitchenTerminal.value : null,
+        agentBadge: activeRole.value === 'callcenter' ? agentBadge.value : null
+      })
     })
     if (res.ok) {
       const data = await res.json()
