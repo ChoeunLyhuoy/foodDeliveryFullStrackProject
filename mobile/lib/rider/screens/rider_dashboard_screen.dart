@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'active_deliveries_screen.dart';
 import 'chat_inbox_screen.dart';
+import '../../main.dart';
 
 const int demoRiderId = 1;
 
@@ -72,36 +73,51 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                             ),
                           ],
                         ),
-                        GestureDetector(
-                          onTap: () => setState(() => _online = !_online),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: _online ? Colors.white : Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: _online ? const Color(0xFFE1553C) : Colors.grey,
-                                    shape: BoxShape.circle,
-                                  ),
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => setState(() => _online = !_online),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: _online ? Colors.white : Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  _online ? 'Online' : 'Offline',
-                                  style: TextStyle(
-                                    color: _online ? const Color(0xFFE1553C) : Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 13,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: _online ? const Color(0xFFE1553C) : Colors.grey,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      _online ? 'Online' : 'Offline',
+                                      style: TextStyle(
+                                        color: _online ? const Color(0xFFE1553C) : Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 6),
+                            IconButton(
+                              icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                              onPressed: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                                  (route) => false,
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/api_service.dart';
 import '../../models/restaurant.dart';
 import 'restaurant_detail_screen.dart';
+import '../../main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -109,11 +110,46 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          Stack(
-                            clipBehavior: Clip.none,
+                          Row(
                             children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(14),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Color(0x0E000000),
+                                          blurRadius: 10,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(Icons.notifications_outlined, color: Color(0xFF1E1E24)),
+                                  ),
+                                  Positioned(
+                                    right: -4,
+                                    top: -4,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFE1553C),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(color: Colors.white, width: 1.5),
+                                      ),
+                                      child: const Text(
+                                        '3',
+                                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(width: 8),
                               Container(
-                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(14),
@@ -125,22 +161,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ),
-                                child: const Icon(Icons.notifications_outlined, color: Color(0xFF1E1E24)),
-                              ),
-                              Positioned(
-                                right: -4,
-                                top: -4,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFE1553C),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: Colors.white, width: 1.5),
-                                  ),
-                                  child: const Text(
-                                    '3',
-                                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                                  ),
+                                child: IconButton(
+                                  icon: const Icon(Icons.logout_rounded, color: Color(0xFFE1553C)),
+                                  onPressed: () {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                                      (route) => false,
+                                    );
+                                  },
                                 ),
                               ),
                             ],

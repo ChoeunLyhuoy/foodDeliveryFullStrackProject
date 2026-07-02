@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../main.dart';
 
 class RestaurantDashboardScreen extends StatefulWidget {
   const RestaurantDashboardScreen({super.key});
@@ -83,18 +84,33 @@ class _RestaurantDashboardScreenState extends State<RestaurantDashboardScreen> {
                             ),
                           ],
                         ),
-                        Switch(
-                          value: _isOpen,
-                          activeColor: const Color(0xFFE1553C),
-                          onChanged: (val) {
-                            setState(() => _isOpen = val);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(_isOpen ? 'Store is now OPEN ●' : 'Store is now CLOSED ○'),
-                                backgroundColor: _isOpen ? Colors.green : Colors.red,
-                              ),
-                            );
-                          },
+                        Row(
+                          children: [
+                            Switch(
+                              value: _isOpen,
+                              activeColor: const Color(0xFFE1553C),
+                              onChanged: (val) {
+                                setState(() => _isOpen = val);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(_isOpen ? 'Store is now OPEN ●' : 'Store is now CLOSED ○'),
+                                    backgroundColor: _isOpen ? Colors.green : Colors.red,
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 4),
+                            IconButton(
+                              icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                              onPressed: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                                  (route) => false,
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),

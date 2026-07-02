@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../main.dart';
 
 class CallCenterDashboardScreen extends StatefulWidget {
   const CallCenterDashboardScreen({super.key});
@@ -77,10 +78,10 @@ class _CallCenterDashboardScreenState extends State<CallCenterDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
+                        const Row(
                           children: [
                             Text('🎧', style: TextStyle(fontSize: 28)),
                             SizedBox(width: 10),
@@ -99,7 +100,22 @@ class _CallCenterDashboardScreenState extends State<CallCenterDashboardScreen> {
                             ),
                           ],
                         ),
-                        Icon(Icons.support_agent_rounded, color: Colors.white54, size: 28),
+                        Row(
+                          children: [
+                            const Icon(Icons.support_agent_rounded, color: Colors.white54, size: 28),
+                            const SizedBox(width: 6),
+                            IconButton(
+                              icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                              onPressed: () {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                                  (route) => false,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),

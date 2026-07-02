@@ -21,13 +21,13 @@
           <span class="logo-text">Food<span class="highlight">Go</span></span>
         </RouterLink>
         <nav class="nav-links">
-          <RouterLink to="/" class="nav-item">Home</RouterLink>
-          <RouterLink to="/cart" class="nav-item cart-link">
+          <RouterLink v-if="currentRole === 'customer' || currentRole === 'guest'" to="/" class="nav-item">Home</RouterLink>
+          <RouterLink v-if="currentRole === 'customer'" to="/cart" class="nav-item cart-link">
             Cart
             <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
           </RouterLink>
-          <RouterLink to="/restaurant-dashboard" class="nav-item">Restaurant</RouterLink>
-          <RouterLink to="/call-center-dashboard" class="nav-item font-accent">Support Queue</RouterLink>
+          <RouterLink v-if="currentRole === 'restaurant'" to="/restaurant-dashboard/orders" class="nav-item">Restaurant Board</RouterLink>
+          <RouterLink v-if="currentRole === 'callcenter'" to="/call-center-dashboard" class="nav-item font-accent">Support Queue</RouterLink>
           
           <RouterLink to="/login" class="role-switcher-btn">
             <span>{{ roleEmoji }}</span>
