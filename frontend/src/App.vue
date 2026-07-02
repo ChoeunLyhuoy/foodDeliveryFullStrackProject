@@ -14,7 +14,7 @@
       </transition-group>
     </div>
 
-    <header class="top-nav">
+    <header v-if="!isDashboard" class="top-nav">
       <div class="nav-container">
         <RouterLink to="/" class="logo">
           <span class="logo-emoji">🍔</span>
@@ -31,7 +31,7 @@
         </nav>
       </div>
     </header>
-    <main class="main-content">
+    <main :class="['main-content', { 'full-width-dashboard': isDashboard }]">
       <RouterView v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -43,8 +43,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useCartStore } from './store/cart'
 import { subscribeToTopic } from './services/socket'
+
+const route = useRoute()
+const isDashboard = computed(() => {
+  return route.path.includes('dashboard') || route.path === '/restaurant-dashboard/orders' || route.path === '/restaurant-dashboard/menu' || route.path === '/restaurant-dashboard/reviews' || route.path === '/restaurant-dashboard/settings'
+})
 
 const cartStore = useCartStore()
 const currentRole = ref(localStorage.getItem('foodgo_role') || 'guest')
@@ -247,6 +253,12 @@ onUnmounted(() => {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
+}
+
+.main-content.full-width-dashboard {
+  max-width: none;
+  padding: 0;
+  margin: 0;
 }
 
 /* Page transitions */
