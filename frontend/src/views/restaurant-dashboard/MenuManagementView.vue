@@ -270,11 +270,12 @@ function getEmoji(name) {
   text-decoration: none;
   font-weight: 700;
   font-size: 0.92rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-item:hover, .nav-item.active {
   background: rgba(255, 94, 64, 0.15);
   color: #ff5e40;
+  transform: translateX(4px);
 }
 
 .sidebar-bottom {
@@ -361,6 +362,11 @@ function getEmoji(name) {
   display: flex;
   align-items: center;
   gap: 18px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-item-card:hover {
+  transform: translateY(-3px) scale(1.008);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 .item-thumb-box {

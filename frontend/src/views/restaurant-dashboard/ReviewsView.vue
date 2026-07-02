@@ -188,11 +188,12 @@ const reviewsList = ref([
   text-decoration: none;
   font-weight: 700;
   font-size: 0.92rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-item:hover, .nav-item.active {
   background: rgba(255, 94, 64, 0.15);
   color: #ff5e40;
+  transform: translateX(4px);
 }
 
 .sidebar-bottom {
@@ -259,6 +260,11 @@ const reviewsList = ref([
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.rating-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 .percentage-val {
@@ -290,6 +296,11 @@ const reviewsList = ref([
   padding: 18px 24px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.review-comment-card:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
 }
 
 .comment-header {

@@ -238,13 +238,14 @@ async function advance(order, nextStatus) {
   border-radius: 12px;
   color: #94a3b8;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-item:hover, .nav-item.active {
   background: rgba(255, 94, 64, 0.15);
   color: #ff5e40;
+  transform: translateX(4px);
 }
 
 .sidebar-bottom {
@@ -374,6 +375,11 @@ async function advance(order, nextStatus) {
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   border-left: 5px solid transparent;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.kanban-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 .kanban-card.blue { border-left-color: #3b82f6; }
 .kanban-card.yellow { border-left-color: #f59e0b; }
