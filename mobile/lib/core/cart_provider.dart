@@ -35,6 +35,23 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateQuantity(int itemId, int newQty) {
+    if (newQty <= 0) {
+      _lines.removeWhere((l) => l.item.id == itemId);
+      if (_lines.isEmpty) {
+        restaurantId = null;
+      }
+    } else {
+      for (final l in _lines) {
+        if (l.item.id == itemId) {
+          l.quantity = newQty;
+          break;
+        }
+      }
+    }
+    notifyListeners();
+  }
+
   void clear() {
     _lines.clear();
     restaurantId = null;
