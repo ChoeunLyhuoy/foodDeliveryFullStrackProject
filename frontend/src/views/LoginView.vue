@@ -311,7 +311,6 @@ async function handleSignUp() {
   padding: 32px 16px;
   background: #0f1117;
   color: white;
-  margin: -32px -20px;
 }
 
 .portal-background {

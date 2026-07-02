@@ -154,7 +154,6 @@ function toggleFilter() {
   display: flex;
   min-height: calc(100vh - 70px);
   background: #f8f9fa;
-  margin: -32px -20px;
 }
 
 /* Dark Sidebar */

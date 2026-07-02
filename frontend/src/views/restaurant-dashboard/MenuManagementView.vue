@@ -219,7 +219,6 @@ function getEmoji(name) {
   display: flex;
   height: 100vh;
   background: #f8f9fa;
-  margin: -32px -20px;
 }
 
 /* Dark Sidebar */

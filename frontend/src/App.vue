@@ -49,7 +49,7 @@ import { subscribeToTopic } from './services/socket'
 
 const route = useRoute()
 const isDashboard = computed(() => {
-  return route.path.includes('dashboard') || route.path === '/restaurant-dashboard/orders' || route.path === '/restaurant-dashboard/menu' || route.path === '/restaurant-dashboard/reviews' || route.path === '/restaurant-dashboard/settings'
+  return route.path.includes('dashboard') || route.path === '/login' || route.path === '/restaurant-dashboard/orders' || route.path === '/restaurant-dashboard/menu' || route.path === '/restaurant-dashboard/reviews' || route.path === '/restaurant-dashboard/settings'
 })
 
 const cartStore = useCartStore()
