@@ -18,12 +18,12 @@
           <RouterLink to="/restaurant-dashboard/menu" class="nav-item">
             <span class="nav-icon">🍴</span> Menu Catalog
           </RouterLink>
-          <RouterLink to="/restaurant-dashboard" class="nav-item">
-            <span class="nav-icon">📊</span> Analytics
+          <RouterLink to="/restaurant-dashboard/reviews" class="nav-item">
+            <span class="nav-icon">👍</span> Reviews
           </RouterLink>
-          <a href="#" class="nav-item">
+          <RouterLink to="/restaurant-dashboard/settings" class="nav-item">
             <span class="nav-icon">⚙️</span> Settings
-          </a>
+          </RouterLink>
         </nav>
       </div>
 

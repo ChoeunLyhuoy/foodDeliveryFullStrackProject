@@ -14,6 +14,8 @@ const routes = [
   { path: '/restaurant-dashboard', name: 'restaurant-dashboard', component: () => import('../views/restaurant-dashboard/DashboardView.vue'), meta: { roles: ['restaurant'] } },
   { path: '/restaurant-dashboard/orders', name: 'restaurant-orders-board', component: () => import('../views/restaurant-dashboard/OrdersBoardView.vue'), meta: { roles: ['restaurant'] } },
   { path: '/restaurant-dashboard/menu', name: 'restaurant-menu', component: () => import('../views/restaurant-dashboard/MenuManagementView.vue'), meta: { roles: ['restaurant'] } },
+  { path: '/restaurant-dashboard/reviews', name: 'restaurant-reviews', component: () => import('../views/restaurant-dashboard/ReviewsView.vue'), meta: { roles: ['restaurant'] } },
+  { path: '/restaurant-dashboard/settings', name: 'restaurant-settings', component: () => import('../views/restaurant-dashboard/SettingsView.vue'), meta: { roles: ['restaurant'] } },
 
   // Call center dashboard (web)
   { path: '/call-center-dashboard', name: 'call-center-dashboard', component: () => import('../views/call-center-dashboard/AgentDashboardView.vue'), meta: { roles: ['callcenter'] } },
