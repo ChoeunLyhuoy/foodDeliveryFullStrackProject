@@ -98,8 +98,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getCallCenterQueue } from '../../services/api'
 
+const router = useRouter()
 const loading = ref(true)
 const displayTickets = ref([
   { id: 1, ticketNum: 'SUP-4421', customer: 'Sarah Chen', avatar: '👩🏻', issue: 'Order delayed 40 min', order: '#FG-8821', waiting: '3m', priorityClass: 'high', priorityText: 'high', assigned: false },
@@ -143,6 +145,9 @@ onMounted(async () => {
 
 function assignTicket(t) {
   t.assigned = true
+  setTimeout(() => {
+    router.push(`/call-center-dashboard/chat/${t.id}`)
+  }, 200)
 }
 function toggleFilter() {
   displayTickets.value.reverse()
@@ -202,13 +207,15 @@ function toggleFilter() {
   border-radius: 12px;
   color: #94a3b8;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
   position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-item:hover, .nav-item.active {
   background: rgba(255, 94, 64, 0.15);
-  color: white;
+  color: #ff5e40;
+  transform: translateX(4px);
 }
 
 .badge {
