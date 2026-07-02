@@ -15,12 +15,101 @@ class RiderDashboardScreen extends StatefulWidget {
 }
 
 class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _online = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFFF8F9FA),
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF0F1117),
+        child: Column(
+          children: [
+            // Drawer Header
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF10B981), Color(0xFF059669)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              currentAccountPicture: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white24,
+                ),
+                child: const Center(
+                  child: Text('👨🏽', style: TextStyle(fontSize: 36)),
+                ),
+              ),
+              accountName: const Text(
+                'Alex M.',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              ),
+              accountEmail: const Text(
+                'Rider ID #1 · PP-1A-8888',
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: Colors.white70),
+              ),
+            ),
+            // Menu Items
+            ListTile(
+              leading: const Icon(Icons.dashboard_outlined, color: Colors.white),
+              title: const Text('Rider Console', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.navigation_outlined, color: Colors.white),
+              title: const Text('Active Deliveries', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ActiveDeliveriesScreen(riderId: demoRiderId)),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.monetization_on_outlined, color: Colors.white),
+              title: const Text('Earnings History', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EarningsScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.motorcycle_rounded, color: Colors.white),
+              title: const Text('Vehicle Profile', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined, color: Colors.white),
+              title: const Text('Preferences', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            const Divider(color: Colors.white12, height: 32),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout_rounded, color: Color(0xFFE1553C)),
+              title: const Text('Sign Out Platform', style: TextStyle(color: Color(0xFFE1553C), fontWeight: FontWeight.bold)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                  (route) => false,
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -28,7 +117,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
               // Vibrant Orange Top Section (Figma Image 2 Exact Layout)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                padding: const EdgeInsets.fromLTRB(16, 20, 20, 24),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Color(0xFFE1553C), Color(0xFFFF6B4A)],
@@ -47,27 +136,36 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              'RIDER DASHBOARD',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.2,
-                              ),
+                            IconButton(
+                              icon: const Icon(Icons.menu_rounded, color: Colors.white, size: 28),
+                              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Hey, Alex 👋',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                              ),
+                            const SizedBox(width: 8),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'RIDER DASHBOARD',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Hey, Alex 👋',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -78,7 +176,7 @@ class _RiderDashboardScreenState extends State<RiderDashboardScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: _online ? Colors.white : Colors.white.withValues(alpha: 0.2),
+                                  color: _online ? Colors.white : Colors.white.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                                 child: Row(

@@ -12,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _api = ApiService();
   List<Restaurant> _restaurants = [];
   String _searchQuery = '';
@@ -63,6 +64,82 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF0F1117),
+        child: Column(
+          children: [
+            // Drawer Header
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFE1553C), Color(0xFFFF6B4A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              currentAccountPicture: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white24,
+                ),
+                child: const Center(
+                  child: Text('👩🏻', style: TextStyle(fontSize: 36)),
+                ),
+              ),
+              accountName: const Text(
+                'Sarah Chen',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              ),
+              accountEmail: const Text(
+                'sarah.chen@foodgo.com',
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 12, color: Colors.white70),
+              ),
+            ),
+            // Menu Items
+            ListTile(
+              leading: const Icon(Icons.home_outlined, color: Colors.white),
+              title: const Text('Home Directory', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.receipt_long_outlined, color: Colors.white),
+              title: const Text('My Orders', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.percent_rounded, color: Colors.white),
+              title: const Text('Promo & Offers', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite_border_rounded, color: Colors.white),
+              title: const Text('Favorites', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.support_agent_rounded, color: Colors.white),
+              title: const Text('Call Center Support', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold)),
+              onTap: () => Navigator.pop(context),
+            ),
+            const Divider(color: Colors.white12, height: 32),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout_rounded, color: Color(0xFFE1553C)),
+              title: const Text('Sign Out Platform', style: TextStyle(color: Color(0xFFE1553C), fontWeight: FontWeight.bold)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginRoleScreen()),
+                  (route) => false,
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           color: const Color(0xFFE1553C),
@@ -80,28 +157,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: [
-                              Text(
-                                'DELIVER TO 📍',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: const Color(0xFFE1553C),
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.2,
-                                ),
+                              IconButton(
+                                icon: const Icon(Icons.menu_rounded, color: Color(0xFFE1553C), size: 28),
+                                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                               ),
-                              const SizedBox(height: 2),
-                              Row(
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Phnom Penh City',
-                                    style: theme.textTheme.titleLarge?.copyWith(
+                                    'DELIVER TO 📍',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: const Color(0xFFE1553C),
                                       fontWeight: FontWeight.w800,
-                                      color: const Color(0xFF1E1E24),
+                                      letterSpacing: 1.2,
                                     ),
                                   ),
-                                  const Icon(Icons.keyboard_arrow_down, color: Color(0xFFE1553C)),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Phnom Penh City',
+                                        style: theme.textTheme.titleLarge?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: const Color(0xFF1E1E24),
+                                        ),
+                                      ),
+                                      const Icon(Icons.keyboard_arrow_down, color: Color(0xFFE1553C)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],

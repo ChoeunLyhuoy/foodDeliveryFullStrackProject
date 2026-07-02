@@ -41,10 +41,16 @@ class LoginRoleScreen extends StatefulWidget {
 class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   
-  // 2 sets of controllers (restricting to Customer and Delivery Rider only)
+  // Toggling modes between Sign In and Sign Up
+  bool _isCustomerSignIn = true;
+  bool _isRiderSignIn = true;
+
+  // Controllers
+  final TextEditingController _customerName = TextEditingController();
   final TextEditingController _customerPhone = TextEditingController(text: '+855 12 345 678');
   final TextEditingController _customerPass = TextEditingController(text: 'customer123');
 
+  final TextEditingController _riderName = TextEditingController();
   final TextEditingController _riderPhone = TextEditingController(text: '+855 98 765 432');
   final TextEditingController _riderPass = TextEditingController(text: 'rider123');
   final TextEditingController _riderPlate = TextEditingController(text: 'PP-1A-8888');
@@ -60,8 +66,10 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
   @override
   void dispose() {
     _tabController.dispose();
+    _customerName.dispose();
     _customerPhone.dispose();
     _customerPass.dispose();
+    _riderName.dispose();
     _riderPhone.dispose();
     _riderPass.dispose();
     _riderPlate.dispose();
@@ -145,28 +153,54 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
     setState(() => _isLoading = false);
 
     if (role == 'CUSTOMER') {
-      _showCustomAlert(
-        context,
-        'Authenticated (tb user): Welcome to Customer App',
-        const Color(0xFFE1553C),
-        Icons.check_circle_outline_rounded,
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+      if (_isCustomerSignIn) {
+        _showCustomAlert(
+          context,
+          'Authenticated: Welcome back ${phoneToName(_customerPhone.text, "Customer")}',
+          const Color(0xFFE1553C),
+          Icons.check_circle_outline_rounded,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } else {
+        _showCustomAlert(
+          context,
+          '🎉 Account Registered Successfully! Please Sign In.',
+          const Color(0xFFE1553C),
+          Icons.celebration_rounded,
+        );
+        setState(() => _isCustomerSignIn = true);
+      }
     } else if (role == 'RIDER') {
-      _showCustomAlert(
-        context,
-        'Authenticated (secUser): Welcome to Rider Logistics Dashboard',
-        const Color(0xFF10B981),
-        Icons.delivery_dining_rounded,
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
-      );
+      if (_isRiderSignIn) {
+        _showCustomAlert(
+          context,
+          'Authenticated: Welcome ${phoneToName(_riderPhone.text, "Alex")}',
+          const Color(0xFF10B981),
+          Icons.delivery_dining_rounded,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const RiderDashboardScreen()),
+        );
+      } else {
+        _showCustomAlert(
+          context,
+          '🛵 Rider Fleet Account Created! Please Sign In.',
+          const Color(0xFF10B981),
+          Icons.check_circle_outline_rounded,
+        );
+        setState(() => _isRiderSignIn = true);
+      }
     }
+  }
+
+  String phoneToName(String input, String fallback) {
+    if (input.contains('12 345')) return 'Sarah Chen';
+    if (input.contains('98 765')) return 'Alex M.';
+    return fallback;
   }
 
   @override
@@ -252,7 +286,7 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
                       'Customer & Rider workspace roles only',
                       style: TextStyle(color: Colors.grey.shade400, fontSize: 13, fontWeight: FontWeight.w500),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     // Login Card
                     Container(
@@ -272,7 +306,7 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
                         children: [
                           // Custom SlidTab Selector
                           Container(
-                            margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            margin: const EdgeInsets.fromLTRB(16, 16, 16, 4),
                             decoration: BoxDecoration(
                               color: const Color(0xFFF1F3F5),
                               borderRadius: BorderRadius.circular(20),
@@ -316,18 +350,21 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
                             ),
                           ),
                           
-                          // Tab Contents
+                          // Tab Contents - increased size to fit registrations
                           SizedBox(
-                            height: 360,
+                            height: 440,
                             child: TabBarView(
                               controller: _tabController,
                               children: [
                                 _buildForm(
                                   phoneController: _customerPhone,
                                   passController: _customerPass,
-                                  roleTitle: 'Customer Portal',
-                                  roleBadge: 'Access consumer workspace',
-                                  buttonText: 'Sign in as Customer',
+                                  nameController: _customerName,
+                                  isSignIn: _isCustomerSignIn,
+                                  onToggleMode: () => setState(() => _isCustomerSignIn = !_isCustomerSignIn),
+                                  roleTitle: _isCustomerSignIn ? 'Customer Sign In' : 'Customer Sign Up',
+                                  roleBadge: _isCustomerSignIn ? 'Access consumer workspace' : 'Create new consumer profile',
+                                  buttonText: _isCustomerSignIn ? 'Sign In' : 'Create Account',
                                   extraFieldLabel: null,
                                   extraFieldController: null,
                                   onLogin: () => _handleLogin('CUSTOMER'),
@@ -335,9 +372,12 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
                                 _buildForm(
                                   phoneController: _riderPhone,
                                   passController: _riderPass,
-                                  roleTitle: 'Rider Logistics',
-                                  roleBadge: 'Access fleet map & payouts',
-                                  buttonText: 'Sign in as Rider',
+                                  nameController: _riderName,
+                                  isSignIn: _isRiderSignIn,
+                                  onToggleMode: () => setState(() => _isRiderSignIn = !_isRiderSignIn),
+                                  roleTitle: _isRiderSignIn ? 'Rider Sign In' : 'Rider Sign Up',
+                                  roleBadge: _isRiderSignIn ? 'Access fleet map & payouts' : 'Register delivery logistics vehicle',
+                                  buttonText: _isRiderSignIn ? 'Sign In' : 'Register Vehicle',
                                   extraFieldLabel: 'Vehicle Plate Number',
                                   extraFieldController: _riderPlate,
                                   onLogin: () => _handleLogin('RIDER'),
@@ -366,6 +406,9 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
   Widget _buildForm({
     required TextEditingController phoneController,
     required TextEditingController passController,
+    required TextEditingController nameController,
+    required bool isSignIn,
+    required VoidCallback onToggleMode,
     required String roleTitle,
     required String roleBadge,
     required String buttonText,
@@ -374,7 +417,7 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
     required VoidCallback onLogin,
   }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -400,8 +443,31 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
           ),
           const SizedBox(height: 2),
           Text(roleBadge, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           
+          // Name Input (Only on Sign Up)
+          if (!isSignIn) ...[
+            TextField(
+              controller: nameController,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              decoration: InputDecoration(
+                labelText: 'Full Name',
+                prefixIcon: const Icon(Icons.person_outline_rounded, size: 20, color: Color(0xFFE1553C)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFE1553C), width: 1.8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           // Phone Input
           TextField(
             controller: phoneController,
@@ -421,7 +487,31 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
+
+          // Optional Extra Role-Specific Field
+          if (extraFieldLabel != null && extraFieldController != null) ...[
+            TextField(
+              controller: extraFieldController,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              decoration: InputDecoration(
+                labelText: extraFieldLabel,
+                prefixIcon: const Icon(Icons.security_rounded, size: 20, color: Color(0xFFE1553C)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Color(0xFFE1553C), width: 1.8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
           // Pass Input
           TextField(
             controller: passController,
@@ -442,29 +532,10 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
-          // Optional Extra Role-Specific Field
-          if (extraFieldLabel != null && extraFieldController != null) ...[
-            const SizedBox(height: 14),
-            TextField(
-              controller: extraFieldController,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-              decoration: InputDecoration(
-                labelText: extraFieldLabel,
-                prefixIcon: const Icon(Icons.security_rounded, size: 20, color: Color(0xFFE1553C)),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: const BorderSide(color: Color(0xFFE1553C), width: 1.8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              ),
-            ),
-          ],
+          
           const Spacer(),
+
+          // Submit Button
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -484,6 +555,30 @@ class _LoginRoleScreenState extends State<LoginRoleScreen> with SingleTickerProv
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                     )
                   : Text(buttonText, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: 0.2)),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Sign In / Sign Up Mode Switcher Trigger
+          Center(
+            child: GestureDetector(
+              onTap: onToggleMode,
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w600),
+                  children: [
+                    TextSpan(text: isSignIn ? "Don't have an account? " : "Already have an account? "),
+                    const TextSpan(
+                      text: "Toggle Mode",
+                      style: TextStyle(
+                        color: Color(0xFFE1553C),
+                        fontWeight: FontWeight.w800,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
