@@ -19,14 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _loading = true;
 
   final List<Map<String, String>> _categories = [
-    {'name': 'All', 'emoji': '🍽️'},
-    {'name': 'Pizza', 'emoji': '🍕'},
-    {'name': 'Sushi', 'emoji': '🍣'},
-    {'name': 'Ramen', 'emoji': '🍜'},
-    {'name': 'Burgers', 'emoji': '🍔'},
-    {'name': 'Khmer', 'emoji': '🍲'},
-    {'name': 'Boba Tea', 'emoji': '🧋'},
-    {'name': 'Desserts', 'emoji': '🍰'},
+    {'name': 'All'},
+    {'name': 'Burgers'},
+    {'name': 'Japanese'},
+    {'name': 'Italian'},
   ];
 
   @override
@@ -329,20 +325,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ]
                                 : null,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(cat['emoji']!, style: const TextStyle(fontSize: 16)),
-                              const SizedBox(width: 6),
-                              Text(
-                                cat['name']!,
-                                style: TextStyle(
-                                  color: isSelected ? Colors.white : const Color(0xFF1E1E24),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
+                          child: Center(
+                            child: Text(
+                              cat['name']!,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : const Color(0xFF1E1E24),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       );
@@ -360,16 +351,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Featured Restaurants',
+                       Text(
+                        'Nearby Restaurants',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
                           color: const Color(0xFF1E1E24),
                         ),
                       ),
                       Text(
-                        '${_filteredRestaurants.length} open now',
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w600),
+                        '${_filteredRestaurants.length} open',
+                        style: const TextStyle(color: Color(0xFFE1553C), fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -431,13 +423,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRestaurantCard(BuildContext context, Restaurant r) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 18),
+      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x0E000000),
+            color: Color(0x0A000000),
             blurRadius: 15,
             offset: Offset(0, 6),
           ),
@@ -459,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
                 child: Container(
-                  height: 150,
+                  height: 160,
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -497,47 +489,42 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: const TextStyle(fontSize: 60),
                           ),
                         ),
+                      // Top Left "Most Popular" Badge
                       Positioned(
                         top: 14,
-                        right: 14,
+                        left: 14,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: const Color(0xFFE1553C),
                             borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x1F000000),
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.star_rounded, color: Color(0xFFFFB800), size: 18),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${r.rating}',
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-                              ),
-                            ],
+                          child: const Text(
+                            'Most Popular',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
                           ),
                         ),
                       ),
+                      // Bottom Right "$2.99 delivery" Badge
                       Positioned(
                         bottom: 12,
-                        left: 14,
+                        right: 14,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: const Color(0xAA000000),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x1F000000),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              )
+                            ],
                           ),
                           child: const Text(
-                            '⚡ 20-30 min delivery',
-                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                            '\$2.99 delivery',
+                            style: TextStyle(color: Color(0xFF1E1E24), fontSize: 11, fontWeight: FontWeight.w800),
                           ),
                         ),
                       ),
@@ -547,37 +534,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // Info
               Padding(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      r.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1E1E24),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      r.description,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 14),
-                    Divider(color: Colors.grey.shade100, height: 1),
-                    const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(Icons.delivery_dining, size: 18, color: Colors.grey.shade500),
-                        const SizedBox(width: 6),
-                        Text('Free Delivery', style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w600)),
-                        const Spacer(),
-                        const Text(
-                          'View Menu ➔',
-                          style: TextStyle(color: Color(0xFFE1553C), fontWeight: FontWeight.w800, fontSize: 13),
+                        Text(
+                          r.name,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF1E1E24),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.star_rounded, color: Color(0xFFFFB800), size: 16),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${r.rating.toStringAsFixed(1)} (2,341)',
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF1E1E24)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Text(
+                          r.name.contains('Pizza') 
+                              ? 'Italian - Pizza' 
+                              : r.name.contains('Burger') 
+                                  ? 'American - Burgers' 
+                                  : 'Asian - Gourmet',
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('●', style: TextStyle(color: Colors.grey.shade400, fontSize: 8)),
+                        const SizedBox(width: 8),
+                        Icon(Icons.timer_outlined, size: 14, color: Colors.grey.shade600),
+                        const SizedBox(width: 4),
+                        Text(
+                          '20-30 min',
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 13, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),

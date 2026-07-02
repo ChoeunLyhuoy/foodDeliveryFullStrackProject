@@ -74,13 +74,13 @@
                 :class="col.theme"
               >
                 <div class="card-top">
-                  <span class="order-num">#FG-882{{ order.id }}</span>
-                  <span class="order-time">{{ Math.max(1, order.id * 3) }} min ago</span>
+                  <span class="order-num">#FG-{{ order.id }}</span>
+                  <span class="order-time">{{ order.timeLabel || '5 min ago' }}</span>
                 </div>
 
                 <div class="card-customer">
-                  <strong>{{ getCustomerName(order.id) }}</strong>
-                  <p class="items-desc">{{ getOrderItemsDesc(order.id) }}</p>
+                  <strong>{{ order.customerName || getCustomerName(order.id) }}</strong>
+                  <p class="items-desc">{{ order.itemsDesc || getOrderItemsDesc(order.id) }}</p>
                 </div>
 
                 <div class="card-bot">
@@ -151,19 +151,21 @@ async function fetchOrders() {
     if (orders.value.length === 0) {
       // Provide demo orders if backend returns empty so it looks like Figma Image 3
       orders.value = [
-        { id: 5, status: 'PLACED', totalAmount: 53.97, deliveryAddress: '123 Main St' },
-        { id: 6, status: 'PLACED', totalAmount: 24.97, deliveryAddress: '45 Riverside Ave' },
-        { id: 2, status: 'PREPARING', totalAmount: 44.97, deliveryAddress: '88 Monivong Blvd' },
-        { id: 1, status: 'READY_FOR_PICKUP', totalAmount: 25.98, deliveryAddress: '12 Sisowath Quay' }
+        { id: '8825', status: 'PLACED', totalAmount: 53.97, timeLabel: '1 min ago', customerName: 'James T.', itemsDesc: '2x Wagyu Double, 1x Fries' },
+        { id: '8826', status: 'PLACED', totalAmount: 24.97, timeLabel: '3 min ago', customerName: 'Emma R.', itemsDesc: '1x Classic Smash, 2x Shake' },
+        { id: '8820', status: 'PREPARING', totalAmount: 44.97, timeLabel: '12 min ago', customerName: 'Priya S.', itemsDesc: '3x Crispy Chicken' },
+        { id: '8819', status: 'PREPARING', totalAmount: 30.98, timeLabel: '15 min ago', customerName: 'Marcus L.', itemsDesc: '1x Wagyu Double, 1x Fries' },
+        { id: '8818', status: 'READY_FOR_PICKUP', totalAmount: 25.98, timeLabel: '22 min ago', customerName: 'Sara K.', itemsDesc: '2x Classic Smash' }
       ]
     }
   } catch (e) {
     console.error('Failed to fetch restaurant orders', e)
     orders.value = [
-      { id: 5, status: 'PLACED', totalAmount: 53.97 },
-      { id: 6, status: 'PLACED', totalAmount: 24.97 },
-      { id: 2, status: 'PREPARING', totalAmount: 44.97 },
-      { id: 1, status: 'READY_FOR_PICKUP', totalAmount: 25.98 }
+      { id: '8825', status: 'PLACED', totalAmount: 53.97, timeLabel: '1 min ago', customerName: 'James T.', itemsDesc: '2x Wagyu Double, 1x Fries' },
+      { id: '8826', status: 'PLACED', totalAmount: 24.97, timeLabel: '3 min ago', customerName: 'Emma R.', itemsDesc: '1x Classic Smash, 2x Shake' },
+      { id: '8820', status: 'PREPARING', totalAmount: 44.97, timeLabel: '12 min ago', customerName: 'Priya S.', itemsDesc: '3x Crispy Chicken' },
+      { id: '8819', status: 'PREPARING', totalAmount: 30.98, timeLabel: '15 min ago', customerName: 'Marcus L.', itemsDesc: '1x Wagyu Double, 1x Fries' },
+      { id: '8818', status: 'READY_FOR_PICKUP', totalAmount: 25.98, timeLabel: '22 min ago', customerName: 'Sara K.', itemsDesc: '2x Classic Smash' }
     ]
   } finally {
     loading.value = false

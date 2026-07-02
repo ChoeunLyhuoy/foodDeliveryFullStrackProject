@@ -68,7 +68,7 @@
           </thead>
           <tbody>
             <tr v-for="t in displayTickets" :key="t.id">
-              <td class="td-ticket">SUP-442{{ t.id }}</td>
+              <td class="td-ticket">{{ t.ticketNum }}</td>
               <td class="td-customer">
                 <div class="customer-cell">
                   <span class="avatar-emoji">{{ t.avatar }}</span>
@@ -102,11 +102,11 @@ import { getCallCenterQueue } from '../../services/api'
 
 const loading = ref(true)
 const displayTickets = ref([
-  { id: 1, customer: 'Sarah Chen', avatar: '👩🏻', issue: 'Order delayed 40 min', order: '#FG-8821', waiting: '3m', priorityClass: 'high', priorityText: 'high', assigned: false },
-  { id: 0, customer: 'Marcus Lee', avatar: '👨🏽', issue: 'Wrong items delivered', order: '#FG-8810', waiting: '8m', priorityClass: 'high', priorityText: 'high', assigned: false },
-  { id: 8, customer: 'Emma Rossi', avatar: '👩🏼', issue: 'Payment charged twice', order: '#FG-8799', waiting: '12m', priorityClass: 'medium', priorityText: 'medium', assigned: false },
-  { id: 5, customer: 'James Torres', avatar: '👨🏻', issue: "Can't find restaurant", order: 'N/A', waiting: '20m', priorityClass: 'low', priorityText: 'low', assigned: false },
-  { id: 4, customer: 'Priya Singh', avatar: '👩🏽', issue: 'Refund not received', order: '#FG-8788', waiting: '25m', priorityClass: 'medium', priorityText: 'medium', assigned: false }
+  { id: 1, ticketNum: 'SUP-4421', customer: 'Sarah Chen', avatar: '👩🏻', issue: 'Order delayed 40 min', order: '#FG-8821', waiting: '3m', priorityClass: 'high', priorityText: 'high', assigned: false },
+  { id: 0, ticketNum: 'SUP-4420', customer: 'Marcus Lee', avatar: '👨🏽', issue: 'Wrong items delivered', order: '#FG-8810', waiting: '8m', priorityClass: 'high', priorityText: 'high', assigned: false },
+  { id: 8, ticketNum: 'SUP-4418', customer: 'Emma Rossi', avatar: '👩🏼', issue: 'Payment charged twice', order: '#FG-8799', waiting: '12m', priorityClass: 'medium', priorityText: 'medium', assigned: false },
+  { id: 5, ticketNum: 'SUP-4415', customer: 'James Torres', avatar: '👨🏻', issue: "Can't find restaurant", order: 'N/A', waiting: '20m', priorityClass: 'low', priorityText: 'low', assigned: false },
+  { id: 4, ticketNum: 'SUP-4414', customer: 'Priya Singh', avatar: '👩🏽', issue: 'Refund not received', order: '#FG-8788', waiting: '25m', priorityClass: 'medium', priorityText: 'medium', assigned: false }
 ])
 
 onMounted(async () => {
@@ -114,17 +114,28 @@ onMounted(async () => {
     const { data } = await getCallCenterQueue()
     if (data && data.length > 0) {
       // Map API tickets over Figma structure if live data exists
-      displayTickets.value = data.map((t, idx) => ({
-        id: t.id,
-        customer: idx % 2 === 0 ? 'Sarah Chen' : 'Marcus Lee',
-        avatar: idx % 2 === 0 ? '👩🏻' : '👨🏽',
-        issue: t.priority === 'HIGH' ? 'Order delayed 40 min' : 'Payment inquiry',
-        order: `#FG-882${t.orderId || idx}`,
-        waiting: `${(idx + 1) * 4}m`,
-        priorityClass: t.priority === 'HIGH' ? 'high' : 'medium',
-        priorityText: t.priority === 'HIGH' ? 'high' : 'medium',
-        assigned: false
-      }))
+      displayTickets.value = data.map((t, idx) => {
+        const figmaTickets = [
+          { ticketNum: 'SUP-4421', customer: 'Sarah Chen', avatar: '👩🏻', issue: 'Order delayed 40 min', order: '#FG-8821', waiting: '3m', priorityClass: 'high' },
+          { ticketNum: 'SUP-4420', customer: 'Marcus Lee', avatar: '👨🏽', issue: 'Wrong items delivered', order: '#FG-8810', waiting: '8m', priorityClass: 'high' },
+          { ticketNum: 'SUP-4418', customer: 'Emma Rossi', avatar: '👩🏼', issue: 'Payment charged twice', order: '#FG-8799', waiting: '12m', priorityClass: 'medium' },
+          { ticketNum: 'SUP-4415', customer: 'James Torres', avatar: '👨🏻', issue: "Can't find restaurant", order: 'N/A', waiting: '20m', priorityClass: 'low' },
+          { ticketNum: 'SUP-4414', customer: 'Priya Singh', avatar: '👩🏽', issue: 'Refund not received', order: '#FG-8788', waiting: '25m', priorityClass: 'medium' }
+        ]
+        const template = figmaTickets[idx % figmaTickets.length]
+        return {
+          id: t.id,
+          ticketNum: template.ticketNum,
+          customer: template.customer,
+          avatar: template.avatar,
+          issue: template.issue,
+          order: template.order,
+          waiting: template.waiting,
+          priorityClass: template.priorityClass,
+          priorityText: template.priorityClass,
+          assigned: false
+        }
+      })
     }
   } catch (e) {}
   loading.value = false
