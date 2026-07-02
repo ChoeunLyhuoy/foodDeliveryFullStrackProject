@@ -21,11 +21,6 @@
           <span class="logo-text">Food<span class="highlight">Go</span></span>
         </RouterLink>
         <nav class="nav-links">
-          <RouterLink v-if="currentRole === 'customer' || currentRole === 'guest'" to="/" class="nav-item">Home</RouterLink>
-          <RouterLink v-if="currentRole === 'customer'" to="/cart" class="nav-item cart-link">
-            Cart
-            <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
-          </RouterLink>
           <RouterLink v-if="currentRole === 'restaurant'" to="/restaurant-dashboard/orders" class="nav-item">Restaurant Board</RouterLink>
           <RouterLink v-if="currentRole === 'callcenter'" to="/call-center-dashboard" class="nav-item font-accent">Support Queue</RouterLink>
           
@@ -85,15 +80,13 @@ const cartCount = computed(() => {
 const roleEmoji = computed(() => {
   if (currentRole.value === 'restaurant') return '🏪'
   if (currentRole.value === 'callcenter') return '🎧'
-  if (currentRole.value === 'customer') return '🍔'
   return '🔑'
 })
 
 const roleLabel = computed(() => {
   if (currentRole.value === 'restaurant') return 'Partner'
   if (currentRole.value === 'callcenter') return 'Agent'
-  if (currentRole.value === 'customer') return 'Customer'
-  return 'Sign In / Roles'
+  return 'Sign In / Register'
 })
 
 function syncRole() {

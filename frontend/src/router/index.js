@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { roles: ['guest', 'customer', 'restaurant', 'callcenter', 'delivery'] } },
-  { path: '/', name: 'home', component: () => import('../views/HomeView.vue'), meta: { roles: ['guest', 'customer'] } },
+  { path: '/', redirect: '/login' },
   { path: '/restaurant/:id', name: 'restaurant-detail', component: () => import('../views/RestaurantDetailView.vue'), meta: { roles: ['guest', 'customer'] } },
   { path: '/cart', name: 'cart', component: () => import('../views/CartView.vue'), meta: { roles: ['customer'] } },
   { path: '/checkout', name: 'checkout', component: () => import('../views/CheckoutView.vue'), meta: { roles: ['customer'] } },
